@@ -1,0 +1,17 @@
+# Applies EF Core migrations, then exits. Run it as a Kubernetes Job or an
+# init container before the API starts.
+#   docker build -f Dockerfile.migrator -t healthwatcherapi-migrator .
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+WORKDIR /src
+
+# Pinned to the Microsoft.EntityFrameworkCore.Design version in HealthwatcherApi.csproj.
+RUN dotnet tool install --global dotnet-ef --version 10.0.11
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+COPY HealthwatcherApi/HealthwatcherApi.csproj HealthwatcherApi/
+RUN dotnet restore HealthwatcherApi/HealthwatcherApi.csproj
+
+COPY HealthwatcherApi/ HealthwatcherApi/
+
+# --project is required: without it dotnet-ef cannot tell which project to use.
+ENTRYPOINT ["dotnet-ef", "database", "update", "--project", "HealthwatcherApi", "--configuration", "Release"]

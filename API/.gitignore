@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.dll
+*.pdb
+
+# User / IDE specific
+*.user
+*.suo
+*.userprefs
+*.DotSettings.user
+.vs/
+.vscode/
+.idea/
+
+# Local secrets & overrides
+appsettings.*.local.json
+*.local.json
+.env
+
+# OS
+.DS_Store
+Thumbs.db
