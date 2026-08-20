@@ -11,6 +11,6 @@ public class TargetTests
     [Fact]
     public void Constructor_RejectsMissingName()
     {
-        Assert.Throws<ArgumentNullException>(() => new Target(null!));
+        Assert.Throws<ArgumentNullException>(() => new Target(null!, TODO, TODO, TODO, TODO, TODO));
     }
 }

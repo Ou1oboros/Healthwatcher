@@ -7,14 +7,12 @@ public class TargetDomainService : ITargetDomainService
 {
     public Target InsertTarget(string name)
     {
-        ValidateNameIsFree(name);
-        return new Target(name);
+        throw new NotImplementedException();
     }
 
     public void RenameTarget(Target target, string newName)
     {
-        ValidateNameIsFree(newName);
-        target.Name = newName;
+        throw new NotImplementedException();
     }
 
 

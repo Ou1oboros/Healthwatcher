@@ -1,22 +1,22 @@
 using System.ComponentModel.DataAnnotations;
-using HealthwatcherApi.Shared;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthwatcherApi.Domain.Entities;
 
-public class TargetHistory : BaseEntity
+[Index(nameof(TargetId), nameof(CheckedAt))]
+public class TargetHistory
 {
-    [MaxLength(ValidationConstants.TargetNameMaxLength)]
-    public string Name { get; set; } = null!;
-
-    public Target Target { get; private set; } = null!;
-
+    [Key]
+    public long Id { get; private set; }
     public Guid TargetId { get; private set; }
-
-    public TargetHistory(string name, Target target)
+    public DateTimeOffset CheckedAt { get; private set; }
+    public HealthCheckRecord HealthCheckRecord { get; private set; } = null!;
+    public TargetHistory(Target target, HealthCheckRecord healthCheckRecord)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        Target = target ?? throw new ArgumentNullException(nameof(target));
+        ArgumentNullException.ThrowIfNull(target);
         TargetId = target.Id;
+        CheckedAt = DateTimeOffset.UtcNow;
+        HealthCheckRecord = healthCheckRecord ?? throw new ArgumentNullException(nameof(healthCheckRecord));
     }
 
     /// <summary>Required by EF Core for materialisation. Do not use directly.</summary>

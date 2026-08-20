@@ -16,7 +16,7 @@ public class AppDbContextTests
         using SqliteAppDbContextFactory db = new SqliteAppDbContextFactory("musab");
         await using AppDbContext context = db.Create();
 
-        Target target = new Target("google");
+        Target target = new Target("google", TODO, TODO, TODO, TODO, TODO);
         context.Targets.Add(target);
         await context.SaveChangesAsync();
 
@@ -33,7 +33,7 @@ public class AppDbContextTests
         db.RequestContext.CurrentUsername = null;
         await using AppDbContext context = db.Create();
 
-        context.Targets.Add(new Target("google"));
+        context.Targets.Add(new Target("google", TODO, TODO, TODO, TODO, TODO));
         await context.SaveChangesAsync();
 
         Assert.Equal("system", (await context.Targets.SingleAsync()).CreatedBy);
@@ -45,10 +45,10 @@ public class AppDbContextTests
         using SqliteAppDbContextFactory db = new SqliteAppDbContextFactory();
         await using AppDbContext context = db.Create();
 
-        Target target = new Target("google");
+        Target target = new Target("google", TODO, TODO, TODO, TODO, TODO);
         context.Targets.Add(target);
         await context.SaveChangesAsync();
-        DateTime createdAt = target.CreatedAt;
+        DateTimeOffset createdAt = target.CreatedAt;
 
         target.Name = "renamed";
         await context.SaveChangesAsync();
@@ -65,7 +65,7 @@ public class AppDbContextTests
         Guid targetId;
         await using (AppDbContext seed = db.Create())
         {
-            Target target = new Target("google");
+            Target target = new Target("google", TODO, TODO, TODO, TODO, TODO);
             seed.Targets.Add(target);
             await seed.SaveChangesAsync();
             targetId = target.Id;

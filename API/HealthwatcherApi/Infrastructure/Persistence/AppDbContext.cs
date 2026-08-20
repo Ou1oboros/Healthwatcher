@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using HealthwatcherApi.Application.Transactions;
 using HealthwatcherApi.Domain.Entities;
+using HealthwatcherApi.Infrastructure.Persistence.EntitiesConfiguration;
 using HealthwatcherApi.Shared.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -12,7 +13,7 @@ public class AppDbContext : DbContext, IUnitOfWork
     private readonly RequestContext _requestContext;
 
     public DbSet<Target> Targets => Set<Target>();
-    public DbSet<TargetHistory> Histories => Set<TargetHistory>();
+    public DbSet<TargetHistory> TargetHistory => Set<TargetHistory>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options, RequestContext requestContext)
         : base(options)
@@ -38,16 +39,8 @@ public class AppDbContext : DbContext, IUnitOfWork
                 .HasQueryFilter(Expression.Lambda(notDeleted, parameter));
         }
 
-        // Postgres store types belong here, not on the entities — the domain should not
-        // have to know which database it is being persisted to.
-        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            foreach (IMutableProperty property in entityType.GetProperties())
-            {
-                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
-                    property.SetColumnType("timestamptz");
-            }
-        }
+        modelBuilder.ApplyEntitiesConfiguration();
+
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -64,7 +57,7 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     private void StampAuditFields()
     {
-        DateTime now = DateTime.UtcNow;
+        DateTimeOffset now = DateTimeOffset.UtcNow;
         string username = _requestContext.CurrentUsername ?? "system";
 
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())
