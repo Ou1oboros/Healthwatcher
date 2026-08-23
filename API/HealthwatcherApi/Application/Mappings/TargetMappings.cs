@@ -1,4 +1,3 @@
-using HealthwatcherApi.Application.Contracts;
 using HealthwatcherApi.Application.Contracts.DTOs.Target;
 using HealthwatcherApi.Domain.Entities;
 using HealthwatcherApi.Shared.Common;
@@ -32,6 +31,16 @@ public static class TargetMappings
 
     public static IReadOnlyList<PreviewTargetDto> ToPreviewDtos(this IEnumerable<Target> targets) =>
         targets.Select(ToPreviewDto).ToList();
+
+    public static TargetHistoryDto ToDto(this TargetHistory history) => new TargetHistoryDto
+    {
+        Id = history.Id,
+        CheckedAt = history.CheckedAt,
+        HealthCheckRecord = history.HealthCheckRecord.RecordDto(),
+    };
+
+    public static IReadOnlyList<TargetHistoryDto> ToDtos(this IEnumerable<TargetHistory> history) =>
+        history.Select(ToDto).ToList();
 
     public static HealthCheckRecordDto RecordDto(this HealthCheckRecord record) => new HealthCheckRecordDto
     {

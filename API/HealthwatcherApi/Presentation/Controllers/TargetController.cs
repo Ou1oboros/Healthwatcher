@@ -31,6 +31,25 @@ public class TargetController : ControllerBase
         [FromQuery] PageRequest page, CancellationToken cancellationToken) =>
         Ok(await _targetService.GetTargets(page, cancellationToken));
 
+    /// <summary>Past checks for one target, newest first. Backs the response-time chart.</summary>
+    [HttpGet("{id:guid}/history")]
+    [ProducesResponseType<PagedResult<TargetHistoryDto>>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResult<TargetHistoryDto>>> GetTargetHistory(
+        Guid id,
+        [FromQuery] PageRequest page,
+        [FromQuery] int? withinHours,
+        CancellationToken cancellationToken) =>
+        Ok(await _targetService.GetTargetHistory(id, page, withinHours, cancellationToken));
+
+    /// <summary>Uptime percentage over a rolling window, 24 hours by default.</summary>
+    [HttpGet("{id:guid}/uptime")]
+    [ProducesResponseType<TargetUptimeDto>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<TargetUptimeDto>> GetTargetUptime(
+        Guid id,
+        [FromQuery] int windowHours = 24,
+        CancellationToken cancellationToken = default) =>
+        Ok(await _targetService.GetTargetUptime(id, windowHours, cancellationToken));
+
     [HttpPost]
     [ProducesResponseType<PreviewTargetDto>(StatusCodes.Status201Created)]
     public async Task<ActionResult<PreviewTargetDto>> InsertTarget(
