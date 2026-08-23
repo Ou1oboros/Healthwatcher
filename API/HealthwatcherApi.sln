@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthwatcherApi", "HealthwatcherApi\HealthwatcherApi.csproj", "{1581145E-E52C-439D-AEEE-43DFE4113A15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthwatcherApi.Tests", "HealthwatcherApi.Tests\HealthwatcherApi.Tests.csproj", "{032492CA-7804-44AF-88A4-47EBD17F8B99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{1581145E-E52C-439D-AEEE-43DFE4113A15}.Release|x64.Build.0 = Release|Any CPU
 		{1581145E-E52C-439D-AEEE-43DFE4113A15}.Release|x86.ActiveCfg = Release|Any CPU
 		{1581145E-E52C-439D-AEEE-43DFE4113A15}.Release|x86.Build.0 = Release|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Debug|x64.Build.0 = Debug|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Debug|x86.Build.0 = Debug|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Release|x64.ActiveCfg = Release|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Release|x64.Build.0 = Release|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Release|x86.ActiveCfg = Release|Any CPU
+		{032492CA-7804-44AF-88A4-47EBD17F8B99}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
