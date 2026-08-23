@@ -68,7 +68,7 @@ in-memory SQLite. Pick the cheapest level that can express the rule you are abou
 | Test | Layer | Needs |
 |---|---|---|
 | `Domain/TargetTests` | entity behaviour | nothing — no mocks, no DB |
-| `Domain/TargetDomainServiceTests` | rules across entities | nothing — it takes primitives |
+| `Domain/TargetDomainServiceTests` | rules across entities | substituted repository for `InsertTarget`; nothing for rename/delete |
 | `Application/TargetServiceTests` | orchestration: load → delegate → save → map | substituted repositories |
 | `Application/PageRequestTests` | query-string normalisation | nothing |
 | `Infrastructure/AppDbContextTests` | audit stamping, soft-delete filter | `SqliteAppDbContextFactory` |
