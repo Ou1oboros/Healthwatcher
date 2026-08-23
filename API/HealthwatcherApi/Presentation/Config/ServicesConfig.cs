@@ -8,6 +8,7 @@ using HealthwatcherApi.Domain.Services.Implementation;
 using HealthwatcherApi.Infrastructure.Monitoring;
 using HealthwatcherApi.Infrastructure.Persistence;
 using HealthwatcherApi.Infrastructure.Persistence.Repositories;
+using HealthwatcherApi.Infrastructure.Persistence.Seeding;
 using HealthwatcherApi.Shared.Common;
 using Microsoft.EntityFrameworkCore;
 
@@ -84,6 +85,8 @@ public static class ServicesConfig
             // enough that a target's DNS record changing is picked up.
             .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
+        // Ordered: migrate and seed first, then start probing what was seeded.
+        services.AddHostedService<DatabaseInitializer>();
         services.AddHostedService<HealthMonitorBackgroundService>();
 
         return services;
