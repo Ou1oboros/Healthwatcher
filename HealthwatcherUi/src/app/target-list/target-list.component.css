@@ -1,0 +1,67 @@
+.add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.add-form input {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+td.url {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: white;
+}
+
+.status-up {
+  background: #2e7d32;
+}
+
+.status-down {
+  background: #c62828;
+}
+
+.status-unknown {
+  background: #757575;
+}
+
+.actions button {
+  margin-right: 0.25rem;
+}
+
+.danger {
+  color: #c62828;
+}
+
+.error {
+  color: #c62828;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}

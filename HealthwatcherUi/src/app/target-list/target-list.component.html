@@ -1,0 +1,84 @@
+<h1>Targets</h1>
+
+<form class="add-form" (ngSubmit)="addTarget()">
+  <input
+    type="url"
+    name="newTargetUrl"
+    placeholder="https://example.com"
+    required
+    [(ngModel)]="newTargetUrl"
+  />
+  <button type="submit" [disabled]="adding">
+    {{ adding ? 'Adding...' : 'Add target' }}
+  </button>
+</form>
+
+@if (errorMessage) {
+  <p class="error">{{ errorMessage }}</p>
+}
+
+@if (loading && targets.length === 0) {
+  <p>Loading...</p>
+} @else if (targets.length === 0) {
+  <p>No targets yet. Add one above.</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Url</th>
+        <th>Status</th>
+        <th>Response</th>
+        <th>Checked</th>
+        <th>Enabled</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (target of targets; track target.id) {
+        <tr>
+          <td>
+            @if (renamingId === target.id) {
+              <input
+                type="text"
+                name="renameDraft"
+                [(ngModel)]="renameDraft"
+                (keyup.enter)="confirmRename(target)"
+                (keyup.escape)="cancelRename()"
+              />
+              <button (click)="confirmRename(target)">Save</button>
+              <button type="button" (click)="cancelRename()">Cancel</button>
+            } @else {
+              <a [routerLink]="['/targets', target.id]">{{ target.name }}</a>
+            }
+          </td>
+          <td class="url">{{ target.url }}</td>
+          <td>
+            <span class="status" [class]="'status-' + statusLabel(target.status).toLowerCase()">
+              {{ statusLabel(target.status) }}
+            </span>
+          </td>
+          <td>{{ target.responseTimeMs !== null ? (target.responseTimeMs | number: '1.0-0') + ' ms' : '—' }}</td>
+          <td>{{ target.checkedAt ? (target.checkedAt | date: 'short') : 'never' }}</td>
+          <td>{{ target.isEnabled ? 'Yes' : 'No' }}</td>
+          <td class="actions">
+            @if (renamingId !== target.id) {
+              <button type="button" (click)="startRename(target)">Rename</button>
+            }
+            <button type="button" class="danger" (click)="deleteTarget(target)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button type="button" [disabled]="pageIndex <= 1" (click)="goToPage(pageIndex - 1)">
+      Previous
+    </button>
+    <span>Page {{ pageIndex }} of {{ totalPages || 1 }} ({{ totalCount }} total)</span>
+    <button type="button" [disabled]="pageIndex >= totalPages" (click)="goToPage(pageIndex + 1)">
+      Next
+    </button>
+  </div>
+}

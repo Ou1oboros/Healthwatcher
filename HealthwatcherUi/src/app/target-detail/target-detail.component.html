@@ -1,0 +1,101 @@
+<a routerLink="/">&larr; Back to targets</a>
+
+@if (errorMessage) {
+  <p class="error">{{ errorMessage }}</p>
+}
+
+@if (target) {
+  <h1>
+    @if (renaming) {
+      <input
+        type="text"
+        name="renameDraft"
+        [(ngModel)]="renameDraft"
+        (keyup.enter)="confirmRename()"
+        (keyup.escape)="cancelRename()"
+      />
+      <button (click)="confirmRename()">Save</button>
+      <button type="button" (click)="cancelRename()">Cancel</button>
+    } @else {
+      {{ target.name }}
+      <button type="button" (click)="startRename()">Rename</button>
+    }
+  </h1>
+
+  <p class="url">{{ target.url }}</p>
+
+  <section class="cards">
+    <div class="card">
+      <h3>Last check</h3>
+      <p>
+        <span class="status" [class]="'status-' + statusLabel(target.healthCheckRecord.status).toLowerCase()">
+          {{ statusLabel(target.healthCheckRecord.status) }}
+        </span>
+      </p>
+      <p>{{ target.checkedAt ? (target.checkedAt | date: 'medium') : 'never checked' }}</p>
+      @if (target.healthCheckRecord.responseTimeMs !== null) {
+        <p>{{ target.healthCheckRecord.responseTimeMs | number: '1.0-0' }} ms</p>
+      }
+      @if (target.healthCheckRecord.statusCode !== null) {
+        <p>HTTP {{ target.healthCheckRecord.statusCode }}</p>
+      }
+      @if (target.healthCheckRecord.error) {
+        <p class="error">{{ target.healthCheckRecord.error }}</p>
+      }
+    </div>
+
+    <div class="card">
+      <h3>Uptime</h3>
+      <div class="window-picker">
+        <label>
+          Window (hours):
+          <input
+            type="number"
+            name="windowHours"
+            min="1"
+            [(ngModel)]="windowHours"
+            (change)="loadUptime()"
+          />
+        </label>
+      </div>
+      @if (uptime) {
+        <p class="uptime-percentage">{{ uptime.uptimePercentage | number: '1.1-1' }}%</p>
+        <p>{{ uptime.upChecks }} / {{ uptime.totalChecks }} checks up</p>
+      }
+    </div>
+  </section>
+
+  <h2>Recent history</h2>
+  @if (history.length === 0) {
+    <p>No history yet.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Checked</th>
+          <th>Status</th>
+          <th>Response</th>
+          <th>HTTP</th>
+          <th>Error</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (entry of history; track entry.id) {
+          <tr>
+            <td>{{ entry.checkedAt ? (entry.checkedAt | date: 'short') : '—' }}</td>
+            <td>
+              <span class="status" [class]="'status-' + statusLabel(entry.healthCheckRecord.status).toLowerCase()">
+                {{ statusLabel(entry.healthCheckRecord.status) }}
+              </span>
+            </td>
+            <td>{{ entry.healthCheckRecord.responseTimeMs !== null ? (entry.healthCheckRecord.responseTimeMs | number: '1.0-0') + ' ms' : '—' }}</td>
+            <td>{{ entry.healthCheckRecord.statusCode ?? '—' }}</td>
+            <td>{{ entry.healthCheckRecord.error ?? '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+} @else if (!errorMessage) {
+  <p>Loading...</p>
+}

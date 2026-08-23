@@ -1,0 +1,63 @@
+.url {
+  color: #555;
+  word-break: break-all;
+}
+
+.cards {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  flex: 1;
+}
+
+.uptime-percentage {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0.25rem 0;
+}
+
+.window-picker input {
+  width: 4rem;
+  margin-left: 0.5rem;
+}
+
+.status {
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: white;
+}
+
+.status-up {
+  background: #2e7d32;
+}
+
+.status-down {
+  background: #c62828;
+}
+
+.status-unknown {
+  background: #757575;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.error {
+  color: #c62828;
+}
