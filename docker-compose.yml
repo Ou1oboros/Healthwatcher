@@ -1,0 +1,14 @@
+services:
+  api:
+    build:
+      context: ./API
+    ports:
+      - "5056:8080"
+
+  ui:
+    build:
+      context: ./HealthwatcherUi
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
