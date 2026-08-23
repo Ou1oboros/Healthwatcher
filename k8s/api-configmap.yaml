@@ -1,0 +1,23 @@
+# Mounted into the api pod as appsettings.Production.json (see api-deployment.yaml),
+# which ASP.NET Core layers on top of the baked-in appsettings.json. Editing this and
+# re-applying + restarting the deployment changes the monitored URLs with no rebuild.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: healthwatcher
+data:
+  appsettings.Production.json: |
+    {
+      "Monitoring": {
+        "IntervalSeconds": 30,
+        "TimeoutSeconds": 10,
+        "MaxConcurrentChecks": 10,
+        "Targets": [
+          "https://www.google.com",
+          "https://github.com",
+          "https://www.nic.gov.sa",
+          "https://httpstat.us/503"
+        ]
+      }
+    }

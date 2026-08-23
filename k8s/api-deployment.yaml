@@ -1,0 +1,52 @@
+# SQLite lives on the container's writable layer (no PVC) - simplest thing that works
+# for a take-home, but it means history is lost on restart/reschedule. Kept at a single
+# replica: several pods each running EF migrations against the same file on startup,
+# or writing to it concurrently, is not something SQLite is built for. See the README
+# for what a production version would do instead (networked DB + real replicas).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: healthwatcher
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: healthwatcherapi:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Production
+          volumeMounts:
+            - name: config
+              mountPath: /app/appsettings.Production.json
+              subPath: appsettings.Production.json
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      volumes:
+        - name: config
+          configMap:
+            name: api-config
