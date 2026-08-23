@@ -6,6 +6,11 @@ obj/
 *.dll
 *.pdb
 
+# Local SQLite database (recreated on startup by DatabaseInitializer)
+*.db
+*.db-shm
+*.db-wal
+
 # User / IDE specific
 *.user
 *.suo

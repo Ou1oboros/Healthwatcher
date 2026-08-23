@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using HealthwatcherApi.Application.Transactions;
 using HealthwatcherApi.Domain.Entities;
+using HealthwatcherApi.Infrastructure.Persistence.Converters;
 using HealthwatcherApi.Infrastructure.Persistence.EntitiesConfiguration;
 using HealthwatcherApi.Shared.Common;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,14 @@ public class AppDbContext : DbContext, IUnitOfWork
         : base(options)
     {
         _requestContext = requestContext;
+    }
+
+    /// <summary>Applies to nullable DateTimeOffset properties too, so CheckedAt is covered.</summary>
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+
+        configurationBuilder.Properties<DateTimeOffset>().HaveConversion<UtcDateTimeOffsetConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

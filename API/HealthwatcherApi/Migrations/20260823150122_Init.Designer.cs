@@ -5,73 +5,70 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace HealthwatcherApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260822141840_modified_fields_nullability")]
-    partial class modified_fields_nullability
+    [Migration("20260823150122_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
 
             modelBuilder.Entity("HealthwatcherApi.Domain.Entities.Target", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("TEXT")
                         .HasColumnName("id");
 
-                    b.Property<DateTimeOffset?>("CheckedAt")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<string>("CheckedAt")
+                        .HasColumnType("TEXT")
                         .HasColumnName("checked_at");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("created_by");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("is_deleted");
 
                     b.Property<bool>("IsEnabled")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("is_enabled");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
                         .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("updated_by");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("url");
 
                     b.HasKey("Id")
@@ -84,17 +81,15 @@ namespace HealthwatcherApi.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTimeOffset?>("CheckedAt")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<string>("CheckedAt")
+                        .HasColumnType("TEXT")
                         .HasColumnName("checked_at");
 
                     b.Property<Guid>("TargetId")
-                        .HasColumnType("uuid")
+                        .HasColumnType("TEXT")
                         .HasColumnName("target_id");
 
                     b.HasKey("Id")
@@ -111,24 +106,24 @@ namespace HealthwatcherApi.Migrations
                     b.OwnsOne("HealthwatcherApi.Shared.Common.HealthCheckRecord", "HealthCheckRecord", b1 =>
                         {
                             b1.Property<Guid>("TargetId")
-                                .HasColumnType("uuid")
+                                .HasColumnType("TEXT")
                                 .HasColumnName("id");
 
                             b1.Property<string>("Error")
                                 .HasMaxLength(512)
-                                .HasColumnType("character varying(512)")
+                                .HasColumnType("TEXT")
                                 .HasColumnName("error");
 
                             b1.Property<double?>("ResponseTimeMs")
-                                .HasColumnType("double precision")
+                                .HasColumnType("REAL")
                                 .HasColumnName("response_time_ms");
 
                             b1.Property<int>("Status")
-                                .HasColumnType("integer")
+                                .HasColumnType("INTEGER")
                                 .HasColumnName("status");
 
                             b1.Property<int?>("StatusCode")
-                                .HasColumnType("integer")
+                                .HasColumnType("INTEGER")
                                 .HasColumnName("status_code");
 
                             b1.HasKey("TargetId");
@@ -156,24 +151,24 @@ namespace HealthwatcherApi.Migrations
                     b.OwnsOne("HealthwatcherApi.Shared.Common.HealthCheckRecord", "HealthCheckRecord", b1 =>
                         {
                             b1.Property<long>("TargetHistoryId")
-                                .HasColumnType("bigint")
+                                .HasColumnType("INTEGER")
                                 .HasColumnName("id");
 
                             b1.Property<string>("Error")
                                 .HasMaxLength(512)
-                                .HasColumnType("character varying(512)")
+                                .HasColumnType("TEXT")
                                 .HasColumnName("error");
 
                             b1.Property<double?>("ResponseTimeMs")
-                                .HasColumnType("double precision")
+                                .HasColumnType("REAL")
                                 .HasColumnName("response_time_ms");
 
                             b1.Property<int>("Status")
-                                .HasColumnType("integer")
+                                .HasColumnType("INTEGER")
                                 .HasColumnName("status");
 
                             b1.Property<int?>("StatusCode")
-                                .HasColumnType("integer")
+                                .HasColumnType("INTEGER")
                                 .HasColumnName("status_code");
 
                             b1.HasKey("TargetHistoryId");
