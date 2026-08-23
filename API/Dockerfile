@@ -17,7 +17,9 @@ COPY --from=build /app/publish .
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 EXPOSE 8080
 
-# Non-root by default; $APP_UID is provided by the Microsoft base image.
+# Non-root by default; $APP_UID is provided by the Microsoft base image. The SQLite
+# file is created at a path relative to /app, so the app user needs to own it.
+RUN chown -R $APP_UID /app
 USER $APP_UID
 
 ENTRYPOINT ["dotnet", "HealthwatcherApi.dll"]
