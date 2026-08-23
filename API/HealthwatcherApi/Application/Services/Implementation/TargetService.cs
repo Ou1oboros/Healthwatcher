@@ -33,25 +33,44 @@ public class TargetService : ITargetService
 
     public async Task<TargetDto> GetTargetById(Guid id, CancellationToken cancellationToken = default)
     {
-        Target? target = await _targetRepository.GetByIdAsync(id, cancellationToken);
-        if (target == null)
-            throw new ApplicationException("Target not found");
+        Target target = await _targetRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Target), id);
 
         return target.ToDto();
-
     }
 
-    public Task<PagedResult<PreviewTargetDto>> GetTargets(PageRequest page, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public async Task<PagedResult<PreviewTargetDto>> GetTargets(PageRequest page, CancellationToken cancellationToken = default)
+    {
+        (IReadOnlyList<Target> items, int totalCount) =
+            await _targetRepository.GetPagedAsync(page.PageIndex, page.PageSize, cancellationToken);
+
+        return new PagedResult<PreviewTargetDto>(items.ToPreviewDtos(), totalCount, page.PageIndex, page.PageSize);
+    }
 
     public async Task<PreviewTargetDto> InsertTarget(InsertTargetDto insertTargetDto,
         CancellationToken cancellationToken = default)
     {
-        Target? target = await _targetDomainService.InsertTarget(insertTargetDto.Url);
-        if (target != null) return target.ToPreviewDto();
-        else throw new ApplicationException("Failed to insert target");
+        Target target = await _targetDomainService.InsertTarget(insertTargetDto.Url, cancellationToken);
+        return target.ToPreviewDto();
     }
 
-    public Task RenameTarget(Guid targetId, RenameTargetDto renameTargetDto, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public async Task RenameTarget(Guid targetId, RenameTargetDto renameTargetDto, CancellationToken cancellationToken = default)
+    {
+        Target target = await _targetRepository.GetTrackedByIdAsync(targetId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Target), targetId);
 
-    public Task DeleteTarget(Guid targetId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        _targetDomainService.RenameTarget(target, renameTargetDto.Name);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteTarget(Guid targetId, CancellationToken cancellationToken = default)
+    {
+        Target target = await _targetRepository.GetTrackedByIdAsync(targetId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Target), targetId);
+
+        _targetDomainService.DeleteTarget(target);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
 }

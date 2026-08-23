@@ -17,10 +17,10 @@ public class TargetRepository : ITargetRepository
 
 
     public Task<Target?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
+        _context.Targets.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
 
     public Task<Target?> GetTrackedByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
+        _context.Targets.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
 
     public async Task<Target?> InsertTargetAsync(string name, string url, CancellationToken cancellationToken = default)
     {
@@ -29,5 +29,22 @@ public class TargetRepository : ITargetRepository
         await _context.SaveChangesAsync(cancellationToken);
         return newTarget.Entity;
     }
+
+    public async Task<(IReadOnlyList<Target> Items, int TotalCount)> GetPagedAsync(
+        int pageIndex, int pageSize, CancellationToken cancellationToken = default)
+    {
+        IQueryable<Target> query = _context.Targets.AsNoTracking().OrderBy(t => t.Name);
+
+        int totalCount = await query.CountAsync(cancellationToken);
+        List<Target> items = await query
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
+
+    public Task<bool> ExistsByUrlAsync(string url, CancellationToken cancellationToken = default) =>
+        _context.Targets.AsNoTracking().AnyAsync(t => t.Url == url, cancellationToken);
 
 }

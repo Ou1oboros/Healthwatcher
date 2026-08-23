@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HealthwatcherApi.Domain.Exceptions;
 using HealthwatcherApi.Shared;
 using HealthwatcherApi.Shared.Common;
 
@@ -23,6 +24,14 @@ public class Target : BaseEntity
         HealthCheckRecord = healthCheckRecord ?? throw new ArgumentNullException(nameof(healthCheckRecord));
 
 
+    }
+
+    public void Rename(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new BusinessException("Target name cannot be empty.");
+
+        Name = name.Trim();
     }
 
     /// <summary>Required by EF Core for materialisation. Do not use directly.</summary>

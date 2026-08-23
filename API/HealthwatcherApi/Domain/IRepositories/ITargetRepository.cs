@@ -11,4 +11,10 @@ public interface ITargetRepository
     Task<Target?> GetTrackedByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<Target?> InsertTargetAsync(string name, string url, CancellationToken cancellationToken = default);
+
+    Task<(IReadOnlyList<Target> Items, int TotalCount)> GetPagedAsync(
+        int pageIndex, int pageSize, CancellationToken cancellationToken = default);
+
+    /// <summary>Used to enforce that a target's URL is unique before insert.</summary>
+    Task<bool> ExistsByUrlAsync(string url, CancellationToken cancellationToken = default);
 }
