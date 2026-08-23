@@ -4,12 +4,8 @@ using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Application.Mappings;
 
-/// <summary>
-/// Entity to DTO only. Entities are created through their own constructors and
-/// domain methods, never mapped into from the outside — so there is no reverse.
-/// Hand-written on purpose: a missed property is a compile error, not a surprise
-/// null in production.
-/// </summary>
+// Entity -> DTO only, no reverse (entities are built via their own constructors/methods).
+// Hand-written on purpose so a missed property is a compile error, not a null surprise later.
 public static class TargetMappings
 {
     public static TargetDto ToDto(this Target target) => new TargetDto

@@ -13,8 +13,7 @@ public class Target : BaseEntity
     [Required, MaxLength(ValidationConstants.TargetUrlMaxLength)]
     public string Url { get; private set; } = null!;
 
-    /// <summary>Null until the monitor has probed this target at least once.</summary>
-    public DateTimeOffset? CheckedAt { get; private set; }
+    public DateTimeOffset? CheckedAt { get; private set; } // null until the first probe
     public bool IsEnabled { get; private set; }  = true;
     public HealthCheckRecord HealthCheckRecord { get; private set; } = null!;
 
@@ -33,17 +32,15 @@ public class Target : BaseEntity
         Name = name.Trim();
     }
 
-    /// <summary>
-    /// Replaces the latest known result. <paramref name="checkedAt"/> is passed in rather
-    /// than read from the clock so the target and its history row share one timestamp.
-    /// </summary>
+    // checkedAt is passed in instead of read from the clock here so the target and its
+    // history row end up with the exact same timestamp.
     public void RecordCheck(HealthCheckRecord healthCheckRecord, DateTimeOffset checkedAt)
     {
         HealthCheckRecord = healthCheckRecord ?? throw new ArgumentNullException(nameof(healthCheckRecord));
         CheckedAt = checkedAt;
     }
 
-    /// <summary>Required by EF Core for materialisation. Do not use directly.</summary>
+    // EF Core needs this to materialize entities - don't call it yourself.
     // ReSharper disable once UnusedMember.Local
     private Target()
     {

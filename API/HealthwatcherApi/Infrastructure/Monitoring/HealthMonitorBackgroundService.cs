@@ -4,11 +4,8 @@ using Microsoft.Extensions.Options;
 
 namespace HealthwatcherApi.Infrastructure.Monitoring;
 
-/// <summary>
-/// Schedules the check cycle. It owns the timer and nothing else — the work itself lives
-/// in <see cref="IHealthMonitorService"/>, which is scoped, so each cycle gets its own
-/// DbContext rather than sharing one for the lifetime of the process.
-/// </summary>
+// Just owns the timer. The actual work is in IHealthMonitorService, which is scoped -
+// each cycle gets its own DbContext instead of one shared for the process lifetime.
 public class HealthMonitorBackgroundService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
@@ -34,8 +31,7 @@ public class HealthMonitorBackgroundService : BackgroundService
 
         try
         {
-            // Run immediately rather than idling through the first interval, so a freshly
-            // deployed pod has real data before the dashboard's first poll.
+            // run once up front instead of waiting out the first interval
             do
             {
                 await RunCycleSafely(stoppingToken);
@@ -48,10 +44,7 @@ public class HealthMonitorBackgroundService : BackgroundService
         }
     }
 
-    /// <summary>
-    /// The loop must outlive any single bad cycle — a dropped database connection or a
-    /// bug in one probe cannot be allowed to silently end monitoring for the whole pod.
-    /// </summary>
+    // A bad cycle (dropped DB connection, a buggy probe) must not kill monitoring for the pod.
     private async Task RunCycleSafely(CancellationToken cancellationToken)
     {
         try

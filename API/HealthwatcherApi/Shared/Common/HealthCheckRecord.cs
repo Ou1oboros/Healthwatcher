@@ -3,11 +3,8 @@ using Enums;
 
 namespace HealthwatcherApi.Shared.Common;
 
-/// <summary>
-/// The outcome of a single probe. Owned by whoever holds it (a <c>Target</c> holds its
-/// latest, a <c>TargetHistory</c> row holds one past result), so it is written through
-/// the factories below and never mutated afterwards.
-/// </summary>
+// Outcome of a single probe. A Target holds its latest, a TargetHistory row holds one
+// past result - built through the factories below, never mutated after that.
 public class HealthCheckRecord
 {
     public double? ResponseTimeMs { get; private set; }
@@ -17,7 +14,6 @@ public class HealthCheckRecord
     [MaxLength(ValidationConstants.ErrorMaxLength)]
     public string? Error { get; private set; }
 
-    /// <summary>A target that has never been probed yet: Unknown, with nothing to report.</summary>
     public HealthCheckRecord()
     {
 

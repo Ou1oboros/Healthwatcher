@@ -4,14 +4,12 @@ using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Infrastructure.Monitoring;
 
-/// <summary>
-/// Turns "is this URL healthy?" into a single GET. Every failure mode a target can throw
-/// at us — bad DNS, refused connection, TLS failure, timeout, malformed URL — is caught
-/// and returned as a Down record, because one broken target must not stop a check cycle.
-/// </summary>
+// "Is this URL healthy?" as a single GET. Bad DNS, refused connections, TLS errors,
+// timeouts, malformed URLs - all of it gets caught and turned into a Down record so one
+// broken target can't stop the whole check cycle.
 public class HttpHealthProbe : IHealthProbe
 {
-    /// <summary>Named client so its timeout and handler lifetime are configured in one place.</summary>
+    // Named so timeout/handler lifetime are configured in one place (see ServicesConfig).
     public const string HttpClientName = "health-probe";
 
     private readonly IHttpClientFactory _httpClientFactory;
@@ -61,7 +59,7 @@ public class HttpHealthProbe : IHealthProbe
         }
         catch (Exception ex)
         {
-            // Invalid URL, TLS failure, anything else. Still just a Down result.
+            // catch-all - still just a Down result
             _logger.LogWarning(ex, "Probe of {Url} failed unexpectedly", url);
             return HealthCheckRecord.Down(null, Elapsed(startedAt), ex.Message);
         }

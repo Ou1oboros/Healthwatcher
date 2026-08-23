@@ -2,10 +2,7 @@ using Enums;
 
 namespace HealthwatcherApi.Application.Contracts.DTOs.Target;
 
-/// <summary>
-/// One dashboard row: everything the list view shows, so it renders from a single
-/// request without fetching each target individually.
-/// </summary>
+// One dashboard row - everything the list view needs in a single request.
 public class PreviewTargetDto
 {
     public required Guid Id { get; init; }

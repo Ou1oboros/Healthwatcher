@@ -8,7 +8,6 @@ builder.Services.AddProjectServices(builder.Configuration);
 
 WebApplication app = builder.Build();
 
-// First in, last out: this has to wrap every middleware below it to catch them.
 app.UseExceptionHandling();
 
 app.UseSwaggerIfDev(app.Environment);
@@ -24,7 +23,6 @@ app.UseCors(ServicesConfig.SpaCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 
-// After authentication, so there is an identity for the audit columns to record.
 app.UseRequestContext();
 
 app.MapControllers();
@@ -32,5 +30,5 @@ app.MapHealthChecks("/health");
 
 app.Run();
 
-/// <summary>Exposed so WebApplicationFactory&lt;Program&gt; can boot the app in tests.</summary>
+// so WebApplicationFactory<Program> can boot this in integration tests
 public partial class Program;

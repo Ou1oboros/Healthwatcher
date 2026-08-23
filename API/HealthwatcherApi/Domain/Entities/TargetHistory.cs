@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthwatcherApi.Domain.Entities;
 
-/// <summary>
-/// One immutable row per completed check. The (target, time) index is what the
-/// history and uptime queries are ordered and filtered by.
-/// </summary>
+// One immutable row per completed check.
+// The composite index below backs the history/uptime queries (filtered + ordered by it).
 [Index(nameof(TargetId), nameof(CheckedAt))]
 public class TargetHistory
 {
@@ -25,8 +23,7 @@ public class TargetHistory
         HealthCheckRecord = healthCheckRecord ?? throw new ArgumentNullException(nameof(healthCheckRecord));
     }
 
-    /// <summary>Required by EF Core for materialisation. Do not use directly.</summary>
-    private TargetHistory()
+    private TargetHistory() // EF Core materialisation ctor
     {
 
     }

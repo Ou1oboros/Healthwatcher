@@ -2,11 +2,8 @@ using HealthwatcherApi.Domain.Entities;
 
 namespace HealthwatcherApi.Domain.Services.Abstraction;
 
-/// <summary>
-/// Rules that span more than one entity, and so have no single entity to live on.
-/// Takes primitives rather than DTOs — the domain must not depend on the
-/// application layer's contracts.
-/// </summary>
+// Cross-entity rules that don't belong on a single entity. Takes primitives, not DTOs -
+// Domain can't depend on Application's contracts.
 public interface ITargetDomainService
 {
     Task<Target> InsertTarget(string url, CancellationToken cancellationToken = default);

@@ -22,7 +22,7 @@ public class AppDbContext : DbContext, IUnitOfWork
         _requestContext = requestContext;
     }
 
-    /// <summary>Applies to nullable DateTimeOffset properties too, so CheckedAt is covered.</summary>
+    // covers nullable DateTimeOffset? too, so Target.CheckedAt gets the same conversion
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);

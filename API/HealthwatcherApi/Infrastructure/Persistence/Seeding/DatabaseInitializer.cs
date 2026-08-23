@@ -6,12 +6,9 @@ using Microsoft.Extensions.Options;
 
 namespace HealthwatcherApi.Infrastructure.Persistence.Seeding;
 
-/// <summary>
-/// Brings the database up to date and plants the configured target list before anything
-/// serves traffic. Registered ahead of the monitor so the first check cycle finds a
-/// migrated schema. In the cluster this is what makes a fresh pod with an empty volume
-/// come up working, with no manual migration step in the README.
-/// </summary>
+// Migrates + seeds the configured targets before anything serves traffic. Registered
+// ahead of the monitor so the first check cycle finds a migrated schema - this is what
+// lets a fresh pod with an empty volume come up working with no manual migration step.
 public class DatabaseInitializer : IHostedService
 {
     private readonly IServiceScopeFactory _scopeFactory;
@@ -40,10 +37,8 @@ public class DatabaseInitializer : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    /// <summary>
-    /// Seeds through the domain service rather than straight into the table, so a
-    /// configured URL is normalised and validated exactly like one added from the UI.
-    /// </summary>
+    // Goes through the domain service (not straight into the table) so a configured URL
+    // gets normalised/validated the same way one added from the UI would.
     private async Task SeedTargets(ITargetDomainService targetDomainService, CancellationToken cancellationToken)
     {
         foreach (string url in _options.Targets.Where(url => !string.IsNullOrWhiteSpace(url)))

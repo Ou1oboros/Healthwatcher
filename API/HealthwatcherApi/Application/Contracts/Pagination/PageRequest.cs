@@ -1,9 +1,6 @@
 namespace HealthwatcherApi.Application.Contracts;
 
-/// <summary>
-/// Bound from the query string with [FromQuery]. Normalises itself on assignment so
-/// a caller cannot ask for page 0 or for fifty thousand rows.
-/// </summary>
+// Clamps itself on assignment so ?pageIndex=0 or ?pageSize=50000 can't get through.
 public class PageRequest
 {
     public const int MaxPageSize = 100;

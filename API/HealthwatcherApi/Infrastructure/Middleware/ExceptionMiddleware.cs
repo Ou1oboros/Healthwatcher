@@ -6,10 +6,7 @@ using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Infrastructure.Middleware;
 
-/// <summary>
-/// Outermost middleware: converts exceptions into a consistent JSON body.
-/// Register it first so it also covers auth, CORS and the rest of the pipeline.
-/// </summary>
+// Outermost middleware - register first so it also covers auth, CORS, etc.
 public class ExceptionMiddleware
 {
     private static readonly JsonSerializerOptions _serializerOptions =

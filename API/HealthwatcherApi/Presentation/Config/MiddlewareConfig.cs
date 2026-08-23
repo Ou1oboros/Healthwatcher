@@ -4,7 +4,7 @@ namespace HealthwatcherApi.Presentation.Config;
 
 public static class MiddlewareConfig
 {
-    /// <summary>Register first — it must wrap everything downstream to catch it.</summary>
+    // must be registered first to wrap everything downstream
     public static IApplicationBuilder UseExceptionHandling(this IApplicationBuilder app) =>
         app.UseMiddleware<ExceptionMiddleware>();
 

@@ -10,10 +10,7 @@ using HealthwatcherApi.Domain.Services.Abstraction;
 
 namespace HealthwatcherApi.Application.Services.Implementation;
 
-/// <summary>
-/// Orchestration only: load, delegate the rules to the domain, save once, map out.
-/// Business rules belong in the entities or <see cref="ITargetDomainService"/>.
-/// </summary>
+// Orchestration only - rules live on the entities or in ITargetDomainService, not here.
 public class TargetService : ITargetService
 {
     private const int MinWindowHours = 1;
@@ -112,13 +109,12 @@ public class TargetService : ITargetService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    /// <summary>History for an unknown target is a 404, not an empty page.</summary>
+    // History for an unknown target should 404, not silently return an empty page.
     private async Task EnsureTargetExists(Guid targetId, CancellationToken cancellationToken)
     {
         if (!await _targetRepository.ExistsByIdAsync(targetId, cancellationToken))
             throw new NotFoundException(nameof(Target), targetId);
     }
 
-    /// <summary>Keeps a caller from asking for an unbounded scan of the history table.</summary>
     private static int ClampWindow(int hours) => Math.Clamp(hours, MinWindowHours, MaxWindowHours);
 }

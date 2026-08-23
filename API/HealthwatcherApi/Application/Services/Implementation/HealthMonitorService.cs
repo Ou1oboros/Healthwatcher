@@ -9,10 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace HealthwatcherApi.Application.Services.Implementation;
 
-/// <summary>
-/// Orchestration only, same as <see cref="TargetService"/>: load the targets, probe them
-/// all at once, write each result onto its target and into history, commit once.
-/// </summary>
+// Orchestration only: load targets, probe them all, write result + history, commit once.
 public class HealthMonitorService : IHealthMonitorService
 {
     private readonly ITargetRepository _targetRepository;
@@ -59,10 +56,8 @@ public class HealthMonitorService : IHealthMonitorService
         return targets.Count;
     }
 
-    /// <summary>
-    /// Probes run concurrently — a target that takes the full timeout must not add its
-    /// delay to the others — but no more than MaxConcurrentChecks are ever in flight.
-    /// </summary>
+    // Concurrent so a slow/timed-out target doesn't add its delay to the rest, capped by
+    // MaxConcurrentChecks via the semaphore below.
     private async Task<HealthCheckRecord[]> ProbeAll(IReadOnlyList<Target> targets, CancellationToken cancellationToken)
     {
         using SemaphoreSlim gate = new SemaphoreSlim(_options.MaxConcurrentChecks);

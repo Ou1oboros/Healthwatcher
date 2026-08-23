@@ -2,10 +2,7 @@ using System.Net;
 
 namespace HealthwatcherApi.Application.Exceptions;
 
-/// <summary>
-/// Base for expected application failures that map onto an HTTP status code.
-/// Anything not derived from this is treated as unexpected and reported as a 500.
-/// </summary>
+// Expected failures that map to a status code. Anything else bubbles up as a 500.
 public abstract class AppLayerException : Exception
 {
     public HttpStatusCode StatusCode { get; }

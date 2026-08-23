@@ -57,7 +57,8 @@ public static class ServicesConfig
         return services;
     }
 
-    /// <summary>Validated at startup: a bad interval in the ConfigMap fails the pod loudly instead of silently monitoring nothing.</summary>
+    // ValidateOnStart so a bad interval in the ConfigMap fails the pod loudly instead of
+    // silently monitoring nothing.
     private static IServiceCollection AddMonitoringOptions(this IServiceCollection services, IConfiguration config)
     {
         services.AddOptions<MonitoringOptions>()

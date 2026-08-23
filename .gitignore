@@ -1,4 +1,3 @@
-# Build output
 bin/
 obj/
 [Dd]ebug/
@@ -6,12 +5,10 @@ obj/
 *.dll
 *.pdb
 
-# Local SQLite database (recreated on startup by DatabaseInitializer)
 *.db
 *.db-shm
 *.db-wal
 
-# User / IDE specific
 *.user
 *.suo
 *.userprefs
@@ -20,11 +17,9 @@ obj/
 .vscode/
 .idea/
 
-# Local secrets & overrides
 appsettings.*.local.json
 *.local.json
 .env
 
-# OS
 .DS_Store
 Thumbs.db
