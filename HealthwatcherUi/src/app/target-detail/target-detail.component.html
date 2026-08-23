@@ -65,6 +65,25 @@
     </div>
   </section>
 
+  <h2>Response time</h2>
+  @if (chartData; as chart) {
+    <svg
+      class="response-chart"
+      [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+      preserveAspectRatio="none"
+    >
+      <polyline [attr.points]="chart.points" />
+      @for (dot of chart.dots; track $index) {
+        <circle [attr.cx]="dot.x" [attr.cy]="dot.y" r="3" [class.dot-down]="!dot.up" />
+      }
+    </svg>
+    <p class="chart-caption">
+      Last {{ chart.dots.length }} checks, oldest to newest &middot; peak {{ chart.maxMs | number: '1.0-0' }} ms
+    </p>
+  } @else {
+    <p>Not enough history yet for a chart.</p>
+  }
+
   <h2>Recent history</h2>
   @if (history.length === 0) {
     <p>No history yet.</p>

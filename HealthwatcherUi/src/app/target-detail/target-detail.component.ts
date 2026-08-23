@@ -7,6 +7,23 @@ import { TargetService } from '../services/target.service';
 
 const REFRESH_INTERVAL_MS = 15000;
 
+// SVG viewBox units, not pixels - the element is stretched to its CSS size.
+const CHART_WIDTH = 600;
+const CHART_HEIGHT = 160;
+const CHART_PADDING = 10;
+
+interface ChartPoint {
+  x: number;
+  y: number;
+  up: boolean;
+}
+
+interface ChartData {
+  points: string;
+  dots: ChartPoint[];
+  maxMs: number;
+}
+
 @Component({
   selector: 'app-target-detail',
   standalone: true,
@@ -26,6 +43,9 @@ export class TargetDetailComponent implements OnInit, OnDestroy {
 
   renaming = false;
   renameDraft = '';
+
+  readonly chartWidth = CHART_WIDTH;
+  readonly chartHeight = CHART_HEIGHT;
 
   private refreshHandle?: ReturnType<typeof setInterval>;
 
@@ -97,5 +117,34 @@ export class TargetDetailComponent implements OnInit, OnDestroy {
 
   statusLabel(status: ConnectionStatus): string {
     return ConnectionStatus[status];
+  }
+
+  // history comes back newest-first (for the table); the chart reads left-to-right
+  // as oldest-to-newest, so it's reversed here rather than re-fetched.
+  get chartData(): ChartData | null {
+    const chronological = [...this.history]
+      .reverse()
+      .filter((entry) => entry.healthCheckRecord.responseTimeMs !== null);
+
+    if (chronological.length < 2) {
+      return null;
+    }
+
+    const maxMs = Math.max(...chronological.map((e) => e.healthCheckRecord.responseTimeMs!), 1);
+    const plotWidth = CHART_WIDTH - CHART_PADDING * 2;
+    const plotHeight = CHART_HEIGHT - CHART_PADDING * 2;
+    const stepX = plotWidth / (chronological.length - 1);
+
+    const dots: ChartPoint[] = chronological.map((entry, i) => ({
+      x: CHART_PADDING + i * stepX,
+      y: CHART_HEIGHT - CHART_PADDING - (entry.healthCheckRecord.responseTimeMs! / maxMs) * plotHeight,
+      up: entry.healthCheckRecord.status === ConnectionStatus.Up,
+    }));
+
+    return {
+      dots,
+      maxMs,
+      points: dots.map((d) => `${d.x.toFixed(1)},${d.y.toFixed(1)}`).join(' '),
+    };
   }
 }
