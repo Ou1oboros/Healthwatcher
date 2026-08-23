@@ -15,6 +15,8 @@ public static class TargetMappings
     public static TargetDto ToDto(this Target target) => new TargetDto
     {
         Id = target.Id,
+        CreatedAt = target.CreatedAt,
+        UpdatedAt = target.UpdatedAt,
         Name = target.Name,
         Url = target.Url,
         CheckedAt = target.CheckedAt,
@@ -26,7 +28,12 @@ public static class TargetMappings
     {
         Id = target.Id,
         Name = target.Name,
+        Url = target.Url,
         Status = target.HealthCheckRecord.Status,
+        IsEnabled = target.IsEnabled,
+        CheckedAt = target.CheckedAt,
+        ResponseTimeMs = target.HealthCheckRecord.ResponseTimeMs,
+        StatusCode = target.HealthCheckRecord.StatusCode,
     };
 
     public static IReadOnlyList<PreviewTargetDto> ToPreviewDtos(this IEnumerable<Target> targets) =>
