@@ -1,4 +1,5 @@
 using HealthwatcherApi.Application.Contracts;
+using HealthwatcherApi.Application.Contracts.DTOs.Target;
 using HealthwatcherApi.Application.Services.Abstraction;
 using HealthwatcherApi.Shared.Common;
 using Microsoft.AspNetCore.Mvc;

@@ -1,20 +1,31 @@
 using HealthwatcherApi.Domain.Entities;
+using HealthwatcherApi.Domain.Exceptions;
+using HealthwatcherApi.Domain.IRepositories;
 using HealthwatcherApi.Domain.Services.Abstraction;
 
 namespace HealthwatcherApi.Domain.Services.Implementation;
 
-public class TargetDomainService : ITargetDomainService
+public class TargetDomainService(ITargetRepository targetRepository) : ITargetDomainService
 {
-    public Target InsertTarget(string name)
+    public async Task<Target?> InsertTarget(string url)
     {
-        throw new NotImplementedException();
+        string name = ExtractName(url);
+        Target? target = await targetRepository.InsertTargetAsync(name, url);
+        if (target == null)
+            throw new BusinessException("");
+        return target;
     }
 
-    public void RenameTarget(Target target, string newName)
+    private static string ExtractName(string url)
     {
-        throw new NotImplementedException();
+        if (!url.Contains("://"))
+            url = "https://" + url;
+
+        string host = new Uri(url).Host; // e.g. "www.example.com"
+        string[] parts = host.Split('.');
+        return parts.Length >= 2 ? parts[^2] : parts[0];
     }
 
 
-    private static void ValidateNameIsFree(string name) => throw new NotImplementedException();
+    private static void ValidateUrlIsFree(string name) => throw new NotImplementedException();
 }

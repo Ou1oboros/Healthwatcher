@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using HealthwatcherApi.Shared;
 
-namespace HealthwatcherApi.Application.Contracts;
+namespace HealthwatcherApi.Application.Contracts.DTOs.Target;
 
 public class RenameTargetDto
 {

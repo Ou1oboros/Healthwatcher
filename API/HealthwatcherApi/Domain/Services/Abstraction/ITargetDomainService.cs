@@ -9,8 +9,6 @@ namespace HealthwatcherApi.Domain.Services.Abstraction;
 /// </summary>
 public interface ITargetDomainService
 {
-    Target InsertTarget(string name);
-
-    void RenameTarget(Target target, string newName);
+    Task<Target?> InsertTarget(string url);
 
 }

@@ -1,4 +1,5 @@
 using HealthwatcherApi.Application.Contracts;
+using HealthwatcherApi.Application.Contracts.DTOs.Target;
 using HealthwatcherApi.Application.Exceptions;
 using HealthwatcherApi.Application.Mappings;
 using HealthwatcherApi.Application.Services.Abstraction;
@@ -30,11 +31,25 @@ public class TargetService : ITargetService
     }
 
 
-    public Task<TargetDto> GetTargetById(Guid id, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public async Task<TargetDto> GetTargetById(Guid id, CancellationToken cancellationToken = default)
+    {
+        Target? target = await _targetRepository.GetByIdAsync(id, cancellationToken);
+        if (target == null)
+            throw new ApplicationException("Target not found");
+
+        return target.ToDto();
+
+    }
 
     public Task<PagedResult<PreviewTargetDto>> GetTargets(PageRequest page, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-    public Task<PreviewTargetDto> InsertTarget(InsertTargetDto insertTargetDto, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public async Task<PreviewTargetDto> InsertTarget(InsertTargetDto insertTargetDto,
+        CancellationToken cancellationToken = default)
+    {
+        Target? target = await _targetDomainService.InsertTarget(insertTargetDto.Url);
+        if (target != null) return target.ToPreviewDto();
+        else throw new ApplicationException("Failed to insert target");
+    }
 
     public Task RenameTarget(Guid targetId, RenameTargetDto renameTargetDto, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 

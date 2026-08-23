@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using HealthwatcherApi.Shared;
+using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Domain.Entities;
 
@@ -7,9 +8,10 @@ public class Target : BaseEntity
 {
     [MaxLength(ValidationConstants.TargetNameMaxLength)]
     public string Name { get; private set; }  = null!;
+
     [Required, MaxLength(ValidationConstants.TargetUrlMaxLength)]
-    public string? Url { get; private set; }
-    public DateTimeOffset CheckedAt { get; private set; }
+    public string Url { get; private set; } = null!;
+    public DateTimeOffset? CheckedAt { get; private set; }
     public bool IsEnabled { get; private set; }  = true;
     public HealthCheckRecord HealthCheckRecord { get; private set; } = null!;
 

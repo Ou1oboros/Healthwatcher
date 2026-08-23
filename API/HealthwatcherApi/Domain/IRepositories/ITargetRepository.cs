@@ -10,6 +10,5 @@ public interface ITargetRepository
     /// <summary>Tracked, for mutation followed by a unit-of-work commit.</summary>
     Task<Target?> GetTrackedByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<(IReadOnlyList<Target> Targets, int TotalCount)> GetPageAsync(
-        int pageIndex, int pageSize, CancellationToken cancellationToken = default);
+    Task<Target?> InsertTargetAsync(string name, string url, CancellationToken cancellationToken = default);
 }

@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Enums;
-using HealthwatcherApi.Shared;
-using Microsoft.EntityFrameworkCore;
 
-namespace HealthwatcherApi.Domain.Entities;
+namespace HealthwatcherApi.Shared.Common;
 
 public class HealthCheckRecord
 {
@@ -14,15 +12,9 @@ public class HealthCheckRecord
     [MaxLength(ValidationConstants.ErrorMaxLength)]
     public string? Error { get; private set; }
 
-    public HealthCheckRecord(double? responseTimeMs, ConnectionStatus status, int? statusCode, string? error)
+    public HealthCheckRecord()
     {
-        ResponseTimeMs = responseTimeMs;
-        Status = status;
-        StatusCode = statusCode;
-        Error = error;
+
     }
 
-    private HealthCheckRecord()
-    {
-    }
 }

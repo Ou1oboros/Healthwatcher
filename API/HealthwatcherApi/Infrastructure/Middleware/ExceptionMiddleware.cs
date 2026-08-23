@@ -12,7 +12,7 @@ namespace HealthwatcherApi.Infrastructure.Middleware;
 /// </summary>
 public class ExceptionMiddleware
 {
-    private static readonly JsonSerializerOptions SerializerOptions =
+    private static readonly JsonSerializerOptions _serializerOptions =
         new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     private readonly RequestDelegate _next;
@@ -70,6 +70,6 @@ public class ExceptionMiddleware
             TraceId = context.TraceIdentifier,
         };
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(response, SerializerOptions));
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response, _serializerOptions));
     }
 }

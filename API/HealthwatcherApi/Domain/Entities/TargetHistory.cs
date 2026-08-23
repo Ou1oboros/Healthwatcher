@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HealthwatcherApi.Shared.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthwatcherApi.Domain.Entities;
@@ -9,7 +10,7 @@ public class TargetHistory
     [Key]
     public long Id { get; private set; }
     public Guid TargetId { get; private set; }
-    public DateTimeOffset CheckedAt { get; private set; }
+    public DateTimeOffset? CheckedAt { get; private set; }
     public HealthCheckRecord HealthCheckRecord { get; private set; } = null!;
     public TargetHistory(Target target, HealthCheckRecord healthCheckRecord)
     {

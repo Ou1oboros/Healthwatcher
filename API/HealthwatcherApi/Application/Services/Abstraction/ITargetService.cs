@@ -1,4 +1,5 @@
 using HealthwatcherApi.Application.Contracts;
+using HealthwatcherApi.Application.Contracts.DTOs.Target;
 
 namespace HealthwatcherApi.Application.Services.Abstraction;
 
