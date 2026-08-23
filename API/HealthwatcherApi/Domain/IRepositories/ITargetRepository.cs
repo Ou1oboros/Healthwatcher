@@ -17,4 +17,10 @@ public interface ITargetRepository
 
     /// <summary>Used to enforce that a target's URL is unique before insert.</summary>
     Task<bool> ExistsByUrlAsync(string url, CancellationToken cancellationToken = default);
+
+    /// <summary>Every target the monitor should probe, tracked so results can be written back.</summary>
+    Task<IReadOnlyList<Target>> GetTrackedEnabledAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Queues a history row; it is persisted by the next unit-of-work commit.</summary>
+    void AddHistory(TargetHistory history);
 }

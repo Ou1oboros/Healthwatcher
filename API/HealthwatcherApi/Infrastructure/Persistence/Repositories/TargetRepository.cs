@@ -47,4 +47,9 @@ public class TargetRepository : ITargetRepository
     public Task<bool> ExistsByUrlAsync(string url, CancellationToken cancellationToken = default) =>
         _context.Targets.AsNoTracking().AnyAsync(t => t.Url == url, cancellationToken);
 
+    public async Task<IReadOnlyList<Target>> GetTrackedEnabledAsync(CancellationToken cancellationToken = default) =>
+        await _context.Targets.Where(t => t.IsEnabled).ToListAsync(cancellationToken);
+
+    public void AddHistory(TargetHistory history) => _context.TargetHistory.Add(history);
+
 }
