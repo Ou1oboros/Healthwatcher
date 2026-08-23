@@ -1,5 +1,5 @@
-# Build context is this directory (the repository root).
-#   docker build -t healthwatcherapi .
+# Build context is this directory (API/).
+#   docker build -t healthwatcherapi API
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
