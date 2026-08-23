@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthwatcherApi.Domain.Entities;
 
+/// <summary>
+/// One immutable row per completed check. The (target, time) index is what the
+/// history and uptime queries are ordered and filtered by.
+/// </summary>
 [Index(nameof(TargetId), nameof(CheckedAt))]
 public class TargetHistory
 {
@@ -12,11 +16,12 @@ public class TargetHistory
     public Guid TargetId { get; private set; }
     public DateTimeOffset? CheckedAt { get; private set; }
     public HealthCheckRecord HealthCheckRecord { get; private set; } = null!;
-    public TargetHistory(Target target, HealthCheckRecord healthCheckRecord)
+
+    public TargetHistory(Target target, HealthCheckRecord healthCheckRecord, DateTimeOffset checkedAt)
     {
         ArgumentNullException.ThrowIfNull(target);
         TargetId = target.Id;
-        CheckedAt = DateTimeOffset.UtcNow;
+        CheckedAt = checkedAt;
         HealthCheckRecord = healthCheckRecord ?? throw new ArgumentNullException(nameof(healthCheckRecord));
     }
 
