@@ -12,7 +12,12 @@ WebApplication app = builder.Build();
 app.UseExceptionHandling();
 
 app.UseSwaggerIfDev(app.Environment);
-app.UseHttpsRedirection();
+
+// Only in development. In the cluster the pod listens on plain HTTP behind the
+// frontend's nginx, so redirecting to https would break every proxied call.
+if (app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
+
 app.UseCors(ServicesConfig.SpaCorsPolicy);
 
 // No provider is registered yet — add one in ServicesConfig and these start doing work.

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HealthwatcherApi.Presentation.Controllers;
 
 [ApiController]
-[Route("[Controller]")]
+[Route("api/targets")]
 [Produces("application/json")]
 [ProducesResponseType<ErrorResponse>(StatusCodes.Status404NotFound)]
 [ProducesResponseType<ErrorResponse>(StatusCodes.Status400BadRequest)]
