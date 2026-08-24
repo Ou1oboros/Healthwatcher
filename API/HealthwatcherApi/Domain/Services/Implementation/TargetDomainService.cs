@@ -7,6 +7,14 @@ namespace HealthwatcherApi.Domain.Services.Implementation;
 
 public class TargetDomainService(ITargetRepository targetRepository) : ITargetDomainService
 {
+    /// <summary>
+    /// Second-level labels that act as part of the suffix rather than as the name,
+    /// so "nic.gov.sa" is named after "nic" and not after "gov". A full public suffix
+    /// list would be exact, but these cover the registrars this dashboard sees.
+    /// </summary>
+    private static readonly HashSet<string> SuffixSecondLevelLabels =
+        new(StringComparer.OrdinalIgnoreCase) { "ac", "co", "com", "edu", "gov", "mil", "net", "org", "sch" };
+
     public async Task<Target> InsertTarget(string url, CancellationToken cancellationToken = default)
     {
         Uri uri = ParseUrl(url);
@@ -48,10 +56,22 @@ public class TargetDomainService(ITargetRepository targetRepository) : ITargetDo
         return uri;
     }
 
+    /// <summary>
+    /// Names a target after the registrable part of its host: "www.google.com" and
+    /// "api.google.com" are both "google". Hosts with nothing to strip - an address
+    /// or a single label such as "localhost" - keep the host as their name.
+    /// </summary>
     private static string ExtractName(Uri uri)
     {
-        string[] parts = uri.Host.Split('.');
-        return parts.Length >= 2 ? parts[^2] : parts[0];
+        if (uri.HostNameType is UriHostNameType.IPv4 or UriHostNameType.IPv6)
+            return uri.Host;
+
+        string[] labels = uri.Host.Split('.', StringSplitOptions.RemoveEmptyEntries);
+        if (labels.Length < 2)
+            return uri.Host;
+
+        bool suffixIsTwoLabels = labels.Length > 2 && SuffixSecondLevelLabels.Contains(labels[^2]);
+        return suffixIsTwoLabels ? labels[^3] : labels[^2];
     }
 
     private async Task ValidateUrlIsFree(string url, CancellationToken cancellationToken)

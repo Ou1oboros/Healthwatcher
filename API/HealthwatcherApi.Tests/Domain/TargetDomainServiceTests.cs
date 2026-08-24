@@ -34,12 +34,19 @@ public class TargetDomainServiceTests
         Assert.Equal("https://github.com/", target.Url);
     }
 
-    [Fact]
-    public async Task InsertTarget_ExtractsANameFromTheHost()
+    [Theory]
+    [InlineData("https://google.com", "google")]
+    [InlineData("https://www.google.com", "google")]
+    [InlineData("https://api.github.com", "github")]
+    [InlineData("https://www.bbc.co.uk", "bbc")]
+    [InlineData("https://nic.gov.sa", "nic")]
+    [InlineData("https://localhost:8080", "localhost")]
+    [InlineData("https://192.168.1.10", "192.168.1.10")]
+    public async Task InsertTarget_ExtractsANameFromTheHost(string url, string expectedName)
     {
-        Target target = await _sut.InsertTarget("https://www.google.com");
+        Target target = await _sut.InsertTarget(url);
 
-        Assert.Equal("google", target.Name);
+        Assert.Equal(expectedName, target.Name);
     }
 
     [Theory]
