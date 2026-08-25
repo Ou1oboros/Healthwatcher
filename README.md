@@ -191,6 +191,7 @@ kubectl apply -f k8s/ui-service.yaml
 
 # 4. Wait for both pods to be ready
 kubectl -n healthwatcher get pods --watch
+#ctrl + c to exit watch mode
 
 # 5. Open the dashboard (holds a tunnel open in the foreground - see the note below)
 minikube service ui -n healthwatcher
