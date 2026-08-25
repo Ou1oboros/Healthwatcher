@@ -72,16 +72,23 @@ public class TargetRepository : ITargetRepository
     public async Task<(int UpCount, int TotalCount)> GetCheckCountsAsync(
         Guid targetId, DateTimeOffset since, CancellationToken cancellationToken = default)
     {
-        // Counted in the database rather than by loading the window: a day of checks at a
-        // 30s interval is ~2,880 rows per target, and we only need two numbers from them.
-        IQueryable<TargetHistory> query = _context.TargetHistory
+        // Counted in the database, not by loading a day's worth of rows for two numbers.
+        // GroupBy(h => 1) collapses everything into one group, so it is a single SELECT.
+        // SUM over a CASE, because EF cannot translate Count(predicate) reaching into an
+        // owned type from inside a group aggregate.
+        var counts = await _context.TargetHistory
             .AsNoTracking()
-            .Where(h => h.TargetId == targetId && h.CheckedAt >= since);
+            .Where(h => h.TargetId == targetId && h.CheckedAt >= since)
+            .GroupBy(h => 1)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                Up = g.Sum(h => h.HealthCheckRecord.Status == ConnectionStatus.Up ? 1 : 0)
+            })
+            .FirstOrDefaultAsync(cancellationToken);
 
-        int totalCount = await query.CountAsync(cancellationToken);
-        int upCount = await query.CountAsync(h => h.HealthCheckRecord.Status == ConnectionStatus.Up, cancellationToken);
-
-        return (upCount, totalCount);
+        // An empty window produces no group, hence no row.
+        return counts is null ? (0, 0) : (counts.Up, counts.Total);
     }
 
 }
