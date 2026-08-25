@@ -1,59 +1,59 @@
 # HealthwatcherUi
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.12.
+The Healthwatcher dashboard: an Angular 19 app — standalone components, template-driven
+forms, no state library — that lists every monitored target with its current status, and
+drills into one target's uptime and check history.
+
+Generated with [Angular CLI](https://github.com/angular/angular-cli) 19.2.12.
+
+## Layout
+
+| Where | What |
+|---|---|
+| `src/app/target-list/` | dashboard: status per target, add form, rename/delete, down-alert banner |
+| `src/app/target-detail/` | one target: last check, uptime, response-time chart, recent history |
+| `src/app/confirm-dialog/` | the confirmation shown before a delete |
+| `src/app/services/target.service.ts` | every API call, against the relative base `/api` |
+| `src/app/models/target.model.ts` | TypeScript mirrors of the backend DTOs |
+
+Both pages re-fetch on a 15s `setInterval` — polling rather than SSE or WebSockets, for
+the reasons in the top-level [README](../README.md).
 
 ## Development server
 
-To start a local development server, run:
-
 ```bash
-ng serve
+npm install
+npm start            # http://localhost:4200
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+`npm start` is `ng serve --proxy-config proxy.conf.json`, and the proxy forwards `/api` to
+the API at `http://localhost:5056` — so run the backend alongside it (see
+[API/README.md](../API/README.md#running)). A plain `ng serve` skips the proxy, and every
+API call 404s.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
+The API is never addressed by an absolute host, only by the relative `/api`: the dev
+proxy, nginx in the container, and the Kubernetes deployment each resolve that path their
+own way, so the same frontend build works in all three.
 
 ## Building
 
-To build the project run:
-
 ```bash
-ng build
+npm run build        # production build into dist/healthwatcher-ui/
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The Docker image builds that and serves it from nginx, which also reverse-proxies `/api/`
+to the `api` Service — see `nginx.conf` and the top-level [README](../README.md) for the
+full deployment.
 
 ## Running unit tests
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
 ```bash
-ng test
+npm test             # ng test — Karma + Jasmine, needs a local Chrome
 ```
 
-## Running end-to-end tests
+`app.component.spec.ts` is the only spec here; the behaviour worth covering lives in the
+backend, which has the [full test suite](../API/README.md#testing).
 
-For end-to-end (e2e) testing, run:
+## Additional resources
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+[Angular CLI Overview and Command Reference](https://angular.dev/tools/cli).
