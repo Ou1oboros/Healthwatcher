@@ -57,13 +57,22 @@ export class TargetDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.targetId = this.route.snapshot.paramMap.get('id') ?? '';
     this.load();
-    this.refreshHandle = setInterval(() => this.load(), REFRESH_INTERVAL_MS);
+    this.refreshHandle = setInterval(() => this.refresh(), REFRESH_INTERVAL_MS);
   }
 
   ngOnDestroy(): void {
     if (this.refreshHandle) {
       clearInterval(this.refreshHandle);
     }
+  }
+
+  // Skipped while renaming: a reload would swap the target out from under the open editor.
+  private refresh(): void {
+    if (this.renaming) {
+      return;
+    }
+
+    this.load();
   }
 
   load(): void {
@@ -115,12 +124,15 @@ export class TargetDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  get isDown(): boolean {
+    return this.target?.healthCheckRecord.status === ConnectionStatus.Down;
+  }
+
   statusLabel(status: ConnectionStatus): string {
     return ConnectionStatus[status];
   }
 
-  // history comes back newest-first (for the table); the chart reads left-to-right
-  // as oldest-to-newest, so it's reversed here rather than re-fetched.
+  // History arrives newest-first for the table; the chart reads oldest-to-newest.
   get chartData(): ChartData | null {
     const chronological = [...this.history]
       .reverse()

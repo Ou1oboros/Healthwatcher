@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { ConnectionStatus, PreviewTarget } from '../models/target.model';
 import { TargetService } from '../services/target.service';
 
@@ -10,7 +11,7 @@ const REFRESH_INTERVAL_MS = 15000;
 @Component({
   selector: 'app-target-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ConfirmDialogComponent],
   templateUrl: './target-list.component.html',
   styleUrl: './target-list.component.css',
 })
@@ -25,13 +26,16 @@ export class TargetListComponent implements OnInit, OnDestroy {
   loading = false;
   errorMessage = '';
 
-  // bound to the "add target" form via ngModel
   newTargetUrl = '';
   adding = false;
 
-  // id of the row currently being renamed, and the ngModel-bound draft value
+  // the row currently being renamed, and its draft value
   renamingId: string | null = null;
   renameDraft = '';
+
+  // the row whose delete is waiting on the confirmation dialog
+  pendingDelete: PreviewTarget | null = null;
+  deleting = false;
 
   private refreshHandle?: ReturnType<typeof setInterval>;
 
@@ -39,13 +43,27 @@ export class TargetListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.load();
-    this.refreshHandle = setInterval(() => this.load(), REFRESH_INTERVAL_MS);
+    this.refreshHandle = setInterval(() => this.refresh(), REFRESH_INTERVAL_MS);
   }
 
   ngOnDestroy(): void {
     if (this.refreshHandle) {
       clearInterval(this.refreshHandle);
     }
+  }
+
+  // Skipped, not cancelled, while a row is being edited: a reload replaces the array under
+  // the open editor. The next tick picks straight back up.
+  get refreshPaused(): boolean {
+    return this.renamingId !== null || this.pendingDelete !== null;
+  }
+
+  private refresh(): void {
+    if (this.refreshPaused) {
+      return;
+    }
+
+    this.load();
   }
 
   load(): void {
@@ -111,14 +129,30 @@ export class TargetListComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteTarget(target: PreviewTarget): void {
-    if (!confirm(`Delete "${target.name}"?`)) {
+  askDelete(target: PreviewTarget): void {
+    this.pendingDelete = target;
+  }
+
+  cancelDelete(): void {
+    this.pendingDelete = null;
+  }
+
+  confirmDelete(): void {
+    const target = this.pendingDelete;
+    if (!target) {
       return;
     }
 
+    this.deleting = true;
     this.targetService.deleteTarget(target.id).subscribe({
-      next: () => this.load(),
+      next: () => {
+        this.deleting = false;
+        this.pendingDelete = null;
+        this.load();
+      },
       error: (err) => {
+        this.deleting = false;
+        this.pendingDelete = null;
         this.errorMessage = err?.error?.message ?? 'Could not delete target.';
       },
     });
@@ -130,6 +164,15 @@ export class TargetListComponent implements OnInit, OnDestroy {
     }
     this.pageIndex = pageIndex;
     this.load();
+  }
+
+  // Drives the alert banner, scoped to the loaded page; a bigger deployment would ask the API.
+  get downTargets(): PreviewTarget[] {
+    return this.targets.filter((target) => target.status === ConnectionStatus.Down);
+  }
+
+  get downTargetNames(): string {
+    return this.downTargets.map((target) => target.name).join(', ');
   }
 
   statusLabel(status: ConnectionStatus): string {

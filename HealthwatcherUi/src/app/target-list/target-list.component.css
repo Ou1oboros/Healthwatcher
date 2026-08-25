@@ -59,6 +59,31 @@ td.url {
   color: #c62828;
 }
 
+.alert {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: baseline;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #f3c2bf;
+  border-left: 4px solid #c62828;
+  border-radius: 4px;
+  background: #fdecea;
+  color: #8c1c17;
+}
+
+/* tinted too, so the banner's names are easy to find in a long table */
+.row-down td {
+  background: #fdf3f2;
+}
+
+.paused-hint {
+  margin: 0.5rem 0 0;
+  color: #757575;
+  font-size: 0.85rem;
+}
+
 .pagination {
   display: flex;
   align-items: center;

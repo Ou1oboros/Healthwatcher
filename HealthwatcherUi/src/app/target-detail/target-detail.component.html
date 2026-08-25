@@ -24,6 +24,17 @@
 
   <p class="url">{{ target.url }}</p>
 
+  @if (isDown) {
+    <div class="alert" role="alert">
+      <strong>This service is down.</strong>
+      <span>{{ target.healthCheckRecord.error ?? 'The last check did not succeed.' }}</span>
+    </div>
+  }
+
+  @if (renaming) {
+    <p class="paused-hint">Auto-refresh paused while you are editing.</p>
+  }
+
   <section class="cards">
     <div class="card">
       <h3>Last check</h3>

@@ -1,0 +1,16 @@
+<div class="backdrop" (click)="cancelled.emit()"></div>
+
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
+  <h2 id="confirm-dialog-title">{{ title }}</h2>
+
+  @if (message) {
+    <p>{{ message }}</p>
+  }
+
+  <div class="dialog-actions">
+    <button type="button" (click)="cancelled.emit()">Cancel</button>
+    <button #confirmButton type="button" class="confirm" [disabled]="busy" (click)="confirmed.emit()">
+      {{ busy ? 'Working...' : confirmLabel }}
+    </button>
+  </div>
+</div>

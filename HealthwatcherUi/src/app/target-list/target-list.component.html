@@ -1,5 +1,14 @@
 <h1>Targets</h1>
 
+@if (downTargets.length > 0) {
+  <div class="alert" role="alert">
+    <strong>
+      {{ downTargets.length === 1 ? '1 service is down' : downTargets.length + ' services are down' }}:
+    </strong>
+    <span>{{ downTargetNames }}</span>
+  </div>
+}
+
 <form class="add-form" (ngSubmit)="addTarget()">
   <input
     type="url"
@@ -36,7 +45,7 @@
     </thead>
     <tbody>
       @for (target of targets; track target.id) {
-        <tr>
+        <tr [class.row-down]="target.status === ConnectionStatus.Down">
           <td>
             @if (renamingId === target.id) {
               <input
@@ -65,12 +74,16 @@
             @if (renamingId !== target.id) {
               <button type="button" (click)="startRename(target)">Rename</button>
             }
-            <button type="button" class="danger" (click)="deleteTarget(target)">Delete</button>
+            <button type="button" class="danger" (click)="askDelete(target)">Delete</button>
           </td>
         </tr>
       }
     </tbody>
   </table>
+
+  @if (refreshPaused) {
+    <p class="paused-hint">Auto-refresh paused while you are editing.</p>
+  }
 
   <div class="pagination">
     <button type="button" [disabled]="pageIndex <= 1" (click)="goToPage(pageIndex - 1)">
@@ -81,4 +94,15 @@
       Next
     </button>
   </div>
+}
+
+@if (pendingDelete; as target) {
+  <app-confirm-dialog
+    title="Delete target"
+    [message]="'Delete ' + target.name + '? Its check history goes with it.'"
+    confirmLabel="Delete"
+    [busy]="deleting"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  />
 }
