@@ -6,4 +6,5 @@ public static class ValidationConstants
     public const int TargetNameMaxLength = 128;
     public const int TargetUrlMaxLength = 2048;
     public const int ErrorMaxLength = 512;
+    public const int LeaseOwnerMaxLength = 128;
 }

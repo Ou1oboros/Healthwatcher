@@ -6,6 +6,7 @@ using HealthwatcherApi.Domain.IRepositories;
 using HealthwatcherApi.Domain.Services.Abstraction;
 using HealthwatcherApi.Domain.Services.Implementation;
 using HealthwatcherApi.Infrastructure.Monitoring;
+using HealthwatcherApi.Infrastructure.Monitoring.Leasing;
 using HealthwatcherApi.Infrastructure.Persistence;
 using HealthwatcherApi.Infrastructure.Persistence.Repositories;
 using HealthwatcherApi.Infrastructure.Persistence.Seeding;
@@ -27,8 +28,7 @@ public static class ServicesConfig
 
         services.AddMonitoringOptions(config);
 
-        // SQLite: one file, no server process. The whole backend fits in a single small pod,
-        // which matters more on a reviewer's minikube than anything Postgres would buy here.
+        // SQLite: one file, no server process, so the whole backend fits in one small pod.
         services.AddDbContext<AppDbContext>(options => options
             .UseSqlite(config.GetConnectionString("DefaultConnection"))
             .UseSnakeCaseNamingConvention());
@@ -57,8 +57,7 @@ public static class ServicesConfig
         return services;
     }
 
-    // ValidateOnStart so a bad interval in the ConfigMap fails the pod loudly instead of
-    // silently monitoring nothing.
+    // ValidateOnStart, so bad config fails the pod instead of silently monitoring nothing.
     private static IServiceCollection AddMonitoringOptions(this IServiceCollection services, IConfiguration config)
     {
         services.AddOptions<MonitoringOptions>()
@@ -73,6 +72,8 @@ public static class ServicesConfig
     {
         services.AddScoped<IHealthProbe, HttpHealthProbe>();
 
+        services.AddScoped<IMonitorLeaseStore, MonitorLeaseStore>();
+
         services.AddHttpClient(HttpHealthProbe.HttpClientName)
             .ConfigureHttpClient((provider, client) =>
             {
@@ -82,8 +83,7 @@ public static class ServicesConfig
                 client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("Healthwatcher/1.0");
             })
-            // Pooled handlers keep connections warm between cycles and recycle them often
-            // enough that a target's DNS record changing is picked up.
+            // Warm connections between cycles, recycled often enough to notice a DNS change.
             .SetHandlerLifetime(TimeSpan.FromMinutes(5));
 
         // Ordered: migrate and seed first, then start probing what was seeded.

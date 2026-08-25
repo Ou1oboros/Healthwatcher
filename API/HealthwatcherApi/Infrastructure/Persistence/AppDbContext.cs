@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using HealthwatcherApi.Application.Transactions;
 using HealthwatcherApi.Domain.Entities;
+using HealthwatcherApi.Infrastructure.Monitoring.Leasing;
 using HealthwatcherApi.Infrastructure.Persistence.Converters;
 using HealthwatcherApi.Infrastructure.Persistence.EntitiesConfiguration;
 using HealthwatcherApi.Shared.Common;
@@ -16,13 +17,16 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<Target> Targets => Set<Target>();
     public DbSet<TargetHistory> TargetHistory => Set<TargetHistory>();
 
+    // Not domain data: the row replicas use to elect one health-check timer.
+    public DbSet<MonitorLease> MonitorLeases => Set<MonitorLease>();
+
     public AppDbContext(DbContextOptions<AppDbContext> options, RequestContext requestContext)
         : base(options)
     {
         _requestContext = requestContext;
     }
 
-    // covers nullable DateTimeOffset? too, so Target.CheckedAt gets the same conversion
+    // Covers DateTimeOffset? too, so Target.CheckedAt gets the same conversion.
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);
@@ -39,7 +43,7 @@ public class AppDbContext : DbContext, IUnitOfWork
             if (!typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
                 continue;
 
-            // WHERE is_deleted = false, applied to every query against this entity.
+            // WHERE is_deleted = false, on every query against this entity.
             ParameterExpression parameter = Expression.Parameter(entityType.ClrType, "e");
             MemberExpression isDeleted = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
             BinaryExpression notDeleted = Expression.Equal(isDeleted, Expression.Constant(false));
