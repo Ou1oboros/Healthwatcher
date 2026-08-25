@@ -86,6 +86,9 @@ public class TargetService : ITargetService
         CancellationToken cancellationToken = default)
     {
         Target target = await _targetDomainService.InsertTarget(insertTargetDto.Url, cancellationToken);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
         return target.ToPreviewDto();
     }
 

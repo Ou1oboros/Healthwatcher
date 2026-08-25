@@ -160,13 +160,14 @@ public class TargetServiceTests
     }
 
     [Fact]
-    public async Task InsertTarget_DelegatesToTheDomainServiceAndMapsTheResult()
+    public async Task InsertTarget_DelegatesToTheDomainServiceSavesAndMapsTheResult()
     {
         Target created = NewTarget("github", "https://github.com/");
         _targetDomainService.InsertTarget("github.com", Arg.Any<CancellationToken>()).Returns(created);
 
         PreviewTargetDto dto = await _sut.InsertTarget(new InsertTargetDto { Url = "github.com" });
 
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
         Assert.Equal(created.Id, dto.Id);
         Assert.Equal("github", dto.Name);
         Assert.Equal("https://github.com/", dto.Url);

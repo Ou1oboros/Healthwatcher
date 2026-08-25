@@ -9,7 +9,7 @@ public interface ITargetRepository
     // Tracked variant - use when the result will be mutated and saved via the unit of work.
     Task<Target?> GetTrackedByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<Target?> InsertTargetAsync(string name, string url, CancellationToken cancellationToken = default);
+    void AddTarget(Target target);
 
     Task<(IReadOnlyList<Target> Items, int TotalCount)> GetPagedAsync(
         int pageIndex, int pageSize, CancellationToken cancellationToken = default);

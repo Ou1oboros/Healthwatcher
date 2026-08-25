@@ -1,4 +1,5 @@
 using HealthwatcherApi.Application.Options;
+using HealthwatcherApi.Application.Transactions;
 using HealthwatcherApi.Domain.Exceptions;
 using HealthwatcherApi.Domain.Services.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -32,20 +33,23 @@ public class DatabaseInitializer : IHostedService
         AppDbContext context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await context.Database.MigrateAsync(cancellationToken);
 
-        await SeedTargets(scope.ServiceProvider.GetRequiredService<ITargetDomainService>(), cancellationToken);
+        await SeedTargets(
+            scope.ServiceProvider.GetRequiredService<ITargetDomainService>(), context, cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     // Goes through the domain service (not straight into the table) so a configured URL
     // gets normalised/validated the same way one added from the UI would.
-    private async Task SeedTargets(ITargetDomainService targetDomainService, CancellationToken cancellationToken)
+    private async Task SeedTargets(
+        ITargetDomainService targetDomainService, IUnitOfWork unitOfWork, CancellationToken cancellationToken)
     {
         foreach (string url in _options.Targets.Where(url => !string.IsNullOrWhiteSpace(url)))
         {
             try
             {
                 await targetDomainService.InsertTarget(url, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
                 _logger.LogInformation("Seeded monitored target {Url}", url);
             }
             catch (BusinessException ex)

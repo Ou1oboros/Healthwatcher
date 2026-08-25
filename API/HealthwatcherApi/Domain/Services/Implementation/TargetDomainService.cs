@@ -2,6 +2,7 @@ using HealthwatcherApi.Domain.Entities;
 using HealthwatcherApi.Domain.Exceptions;
 using HealthwatcherApi.Domain.IRepositories;
 using HealthwatcherApi.Domain.Services.Abstraction;
+using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Domain.Services.Implementation;
 
@@ -23,9 +24,8 @@ public class TargetDomainService(ITargetRepository targetRepository) : ITargetDo
 
         await ValidateUrlIsFree(normalizedUrl, cancellationToken);
 
-        Target? target = await targetRepository.InsertTargetAsync(name, normalizedUrl, cancellationToken);
-        if (target == null)
-            throw new BusinessException("Failed to create the target.");
+        Target target = new Target(name, normalizedUrl, new HealthCheckRecord());
+        targetRepository.AddTarget(target);
 
         return target;
     }

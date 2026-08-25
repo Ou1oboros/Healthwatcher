@@ -9,8 +9,8 @@ namespace HealthwatcherApi.Tests.Domain;
 
 /// <summary>
 /// Domain services hold rules that span more than one entity. InsertTarget needs the
-/// repository (uniqueness, persistence), so that's substituted; RenameTarget and
-/// DeleteTarget act on the entity directly and need nothing at all.
+/// repository (uniqueness, queueing the new row), so that's substituted; RenameTarget
+/// and DeleteTarget act on the entity directly and need nothing at all.
 /// </summary>
 public class TargetDomainServiceTests
 {
@@ -20,10 +20,6 @@ public class TargetDomainServiceTests
     public TargetDomainServiceTests()
     {
         _sut = new TargetDomainService(_targetRepository);
-
-        _targetRepository
-            .InsertTargetAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(callInfo => new Target(callInfo.ArgAt<string>(0), callInfo.ArgAt<string>(1), new HealthCheckRecord()));
     }
 
     [Fact]
@@ -68,14 +64,21 @@ public class TargetDomainServiceTests
         await Assert.ThrowsAsync<BusinessException>(() => _sut.InsertTarget("https://github.com"));
     }
 
+    // Queued, not persisted: committing is the caller's job, so a rejected URL leaves nothing behind.
     [Fact]
-    public async Task InsertTarget_ThrowsWhenTheRepositoryFailsToCreateIt()
+    public async Task InsertTarget_QueuesTheNewTargetOnTheRepository()
     {
-        _targetRepository
-            .InsertTargetAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((Target?)null);
+        Target target = await _sut.InsertTarget("github.com");
 
-        await Assert.ThrowsAsync<BusinessException>(() => _sut.InsertTarget("https://github.com"));
+        _targetRepository.Received(1).AddTarget(target);
+    }
+
+    [Fact]
+    public async Task InsertTarget_QueuesNothingWhenTheUrlIsRejected()
+    {
+        await Assert.ThrowsAsync<BusinessException>(() => _sut.InsertTarget("not a url"));
+
+        _targetRepository.DidNotReceive().AddTarget(Arg.Any<Target>());
     }
 
     [Fact]
