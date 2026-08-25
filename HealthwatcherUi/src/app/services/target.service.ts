@@ -9,9 +9,8 @@ import {
   TargetUptime,
 } from '../models/target.model';
 
-// Relative on purpose: in dev, the Angular dev-server proxy (proxy.conf.json) forwards
-// this to the API; in Docker/Kubernetes, nginx (nginx.conf) reverse-proxies it to the
-// api Service. The browser never needs to know the API's real host or port.
+// Relative on purpose: the dev-server proxy forwards it in dev, nginx does in the cluster,
+// so the browser never needs the API's real host or port.
 const API_BASE_URL = '/api';
 
 @Injectable({ providedIn: 'root' })

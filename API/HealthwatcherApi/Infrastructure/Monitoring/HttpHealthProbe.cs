@@ -4,12 +4,11 @@ using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Infrastructure.Monitoring;
 
-// "Is this URL healthy?" as a single GET. Bad DNS, refused connections, TLS errors,
-// timeouts, malformed URLs - all of it gets caught and turned into a Down record so one
-// broken target can't stop the whole check cycle.
+// A single GET. Every failure - DNS, TLS, timeouts, malformed URLs - becomes a Down record,
+// so one broken target can't stop the cycle.
 public class HttpHealthProbe : IHealthProbe
 {
-    // Named so timeout/handler lifetime are configured in one place (see ServicesConfig).
+    // Named, so timeout and handler lifetime are configured in ServicesConfig.
     public const string HttpClientName = "health-probe";
 
     private readonly IHttpClientFactory _httpClientFactory;
@@ -30,7 +29,7 @@ public class HttpHealthProbe : IHealthProbe
         {
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
 
-            // ResponseHeadersRead: the status line is the answer, so we never pull the body down.
+            // ResponseHeadersRead: the status line is the answer, so never pull the body down.
             using HttpResponseMessage response = await client.SendAsync(
                 request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
@@ -43,7 +42,7 @@ public class HttpHealthProbe : IHealthProbe
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // The app is shutting down, not the target failing. Let the cycle unwind.
+            // Shutting down, not a failing target.
             throw;
         }
         catch (OperationCanceledException)
@@ -59,7 +58,6 @@ public class HttpHealthProbe : IHealthProbe
         }
         catch (Exception ex)
         {
-            // catch-all - still just a Down result
             _logger.LogWarning(ex, "Probe of {Url} failed unexpectedly", url);
             return HealthCheckRecord.Down(null, Elapsed(startedAt), ex.Message);
         }

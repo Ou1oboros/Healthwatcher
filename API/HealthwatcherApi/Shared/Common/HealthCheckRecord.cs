@@ -3,8 +3,7 @@ using Enums;
 
 namespace HealthwatcherApi.Shared.Common;
 
-// Outcome of a single probe. A Target holds its latest, a TargetHistory row holds one
-// past result - built through the factories below, never mutated after that.
+// Outcome of a single probe: a Target holds its latest, a TargetHistory row holds a past one.
 public class HealthCheckRecord
 {
     public double? ResponseTimeMs { get; private set; }
@@ -26,10 +25,7 @@ public class HealthCheckRecord
         ResponseTimeMs = responseTimeMs,
     };
 
-    /// <summary>
-    /// A failed check. <paramref name="statusCode"/> is null when the host was never
-    /// reached at all (DNS failure, timeout, refused connection).
-    /// </summary>
+    /// <summary>A failed check; <paramref name="statusCode"/> is null when the host was never reached.</summary>
     public static HealthCheckRecord Down(int? statusCode, double? responseTimeMs, string error) => new HealthCheckRecord
     {
         Status = ConnectionStatus.Down,
@@ -38,10 +34,7 @@ public class HealthCheckRecord
         Error = Truncate(error),
     };
 
-    /// <summary>
-    /// EF Core will not let one owned instance belong to two owners, so the monitor
-    /// takes a copy for the history row rather than reusing the target's record.
-    /// </summary>
+    /// <summary>EF Core will not let one owned instance belong to two owners, hence the copy.</summary>
     public HealthCheckRecord Copy() => new HealthCheckRecord
     {
         Status = Status,
@@ -50,7 +43,7 @@ public class HealthCheckRecord
         Error = Error,
     };
 
-    /// <summary>Exception messages are unbounded; the column is not.</summary>
+    // Exception messages are unbounded; the column is not.
     private static string Truncate(string error) =>
         error.Length <= ValidationConstants.ErrorMaxLength ? error : error[..ValidationConstants.ErrorMaxLength];
 }

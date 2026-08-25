@@ -1,5 +1,4 @@
-# NodePort so `minikube service ui -n healthwatcher` can open the dashboard straight
-# from the host browser without extra tooling (no Ingress controller required).
+# NodePort, so the dashboard opens from the host browser with no Ingress controller.
 apiVersion: v1
 kind: Service
 metadata:

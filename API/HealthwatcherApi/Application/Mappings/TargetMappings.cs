@@ -4,8 +4,7 @@ using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Application.Mappings;
 
-// Entity -> DTO only, no reverse (entities are built via their own constructors/methods).
-// Hand-written on purpose so a missed property is a compile error, not a null surprise later.
+// Entity -> DTO only. Hand-written, so a missed property is a compile error.
 public static class TargetMappings
 {
     public static TargetDto ToDto(this Target target) => new TargetDto

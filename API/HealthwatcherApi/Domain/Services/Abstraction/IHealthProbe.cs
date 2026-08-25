@@ -2,13 +2,12 @@ using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Domain.Services.Abstraction;
 
-// Lives in Domain so the monitor depends on "probe a URL", not on HttpClient directly.
-// Actual implementation is in Infrastructure.
+// In Domain so the monitor depends on "probe a URL", not on HttpClient; implemented in Infrastructure.
 public interface IHealthProbe
 {
     /// <summary>
-    /// Never throws for an unreachable, slow, or invalid target - those just come back as
-    /// a Down record. Only cancellation of the token propagates as an exception.
+    /// An unreachable, slow, or invalid target comes back as a Down record rather than throwing.
+    /// Only cancellation propagates.
     /// </summary>
     Task<HealthCheckRecord> ProbeAsync(string url, CancellationToken cancellationToken = default);
 }

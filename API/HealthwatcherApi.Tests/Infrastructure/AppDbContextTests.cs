@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthwatcherApi.Tests.Infrastructure;
 
-/// <summary>
-/// The DbContext carries behaviour of its own — audit stamping and the global
-/// soft-delete filter. Both fail silently if broken, so they get real coverage.
-/// </summary>
+// The DbContext carries behaviour of its own - audit stamping and the soft-delete filter -
+// and both fail silently when broken.
 public class AppDbContextTests
 {
     private static Target NewTarget(string name = "google") =>

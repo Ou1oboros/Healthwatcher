@@ -39,13 +39,12 @@ public class ExceptionMiddleware
         }
         catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
         {
-            // The client hung up. Nothing to report, and no response to write.
             _logger.LogInformation("Request cancelled by the client");
         }
         catch (Exception ex)
         {
-            // Deliberately does not echo ex.Message — an unhandled exception can carry
-            // connection strings, SQL or file paths. The traceId ties it to the log.
+            // Never echo ex.Message: it can carry connection strings, SQL or file paths.
+            // The traceId ties the response to the log.
             _logger.LogError(ex, "Unhandled exception");
             await WriteAsync(context, HttpStatusCode.InternalServerError, "An unexpected error occurred.");
         }

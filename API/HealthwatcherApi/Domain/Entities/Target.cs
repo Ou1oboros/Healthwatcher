@@ -32,17 +32,15 @@ public class Target : BaseEntity
         Name = name.Trim();
     }
 
-    // checkedAt is passed in instead of read from the clock here so the target and its
-    // history row end up with the exact same timestamp.
+    // checkedAt is passed in so the target and its history row share the exact timestamp.
     public void RecordCheck(HealthCheckRecord healthCheckRecord, DateTimeOffset checkedAt)
     {
         HealthCheckRecord = healthCheckRecord ?? throw new ArgumentNullException(nameof(healthCheckRecord));
         CheckedAt = checkedAt;
     }
 
-    // EF Core needs this to materialize entities - don't call it yourself.
     // ReSharper disable once UnusedMember.Local
-    private Target()
+    private Target() // EF Core materialisation ctor
     {
 
     }

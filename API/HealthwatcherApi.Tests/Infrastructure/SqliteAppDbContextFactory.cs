@@ -5,11 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthwatcherApi.Tests.Infrastructure;
 
-/// <summary>
-/// A throwaway SQLite database held open in memory for the life of one test.
-/// Relational enough to exercise keys, indexes and query filters, without needing
-/// a real server. Keep the connection open — closing it drops the database.
-/// </summary>
+// A throwaway SQLite database held in memory for the life of one test. Relational enough to
+// exercise keys, indexes and query filters. Closing the connection drops the database.
 public sealed class SqliteAppDbContextFactory : IDisposable
 {
     private readonly SqliteConnection _connection;

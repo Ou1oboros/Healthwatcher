@@ -7,11 +7,8 @@ using NSubstitute;
 
 namespace HealthwatcherApi.Tests.Domain;
 
-/// <summary>
-/// Domain services hold rules that span more than one entity. InsertTarget needs the
-/// repository (uniqueness, queueing the new row), so that's substituted; RenameTarget
-/// and DeleteTarget act on the entity directly and need nothing at all.
-/// </summary>
+// Rules that span more than one entity. InsertTarget needs the repository, so it is
+// substituted; RenameTarget and DeleteTarget act on the entity directly.
 public class TargetDomainServiceTests
 {
     private readonly ITargetRepository _targetRepository = Substitute.For<ITargetRepository>();
@@ -64,7 +61,7 @@ public class TargetDomainServiceTests
         await Assert.ThrowsAsync<BusinessException>(() => _sut.InsertTarget("https://github.com"));
     }
 
-    // Queued, not persisted: committing is the caller's job, so a rejected URL leaves nothing behind.
+    // Queued, not persisted: committing is the caller's job.
     [Fact]
     public async Task InsertTarget_QueuesTheNewTargetOnTheRepository()
     {

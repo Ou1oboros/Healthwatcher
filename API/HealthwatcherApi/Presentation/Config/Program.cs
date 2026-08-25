@@ -12,8 +12,7 @@ app.UseExceptionHandling();
 
 app.UseSwaggerIfDev(app.Environment);
 
-// Only in development. In the cluster the pod listens on plain HTTP behind the
-// frontend's nginx, so redirecting to https would break every proxied call.
+// In the cluster the pod serves plain HTTP behind nginx, so redirecting would break it.
 if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 
@@ -30,5 +29,5 @@ app.MapHealthChecks("/health");
 
 app.Run();
 
-// so WebApplicationFactory<Program> can boot this in integration tests
+// So WebApplicationFactory<Program> can boot this in integration tests.
 public partial class Program;

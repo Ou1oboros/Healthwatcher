@@ -8,6 +8,7 @@ obj/
 *.db
 *.db-shm
 *.db-wal
+*.db.lock
 
 *.user
 *.suo

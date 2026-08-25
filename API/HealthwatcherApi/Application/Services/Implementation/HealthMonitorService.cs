@@ -49,15 +49,14 @@ public class HealthMonitorService : IHealthMonitorService
             _targetRepository.AddHistory(new TargetHistory(targets[i], records[i].Copy(), checkedAt));
         }
 
-        // A single commit per cycle: N targets cost one round trip, not 2N.
+        // One commit per cycle: N targets cost one round trip, not 2N.
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Checked {Count} target(s) at {CheckedAt:O}", targets.Count, checkedAt);
         return targets.Count;
     }
 
-    // Concurrent so a slow/timed-out target doesn't add its delay to the rest, capped by
-    // MaxConcurrentChecks via the semaphore below.
+    // Concurrent, so a timed-out target doesn't add its delay to the rest.
     private async Task<HealthCheckRecord[]> ProbeAll(IReadOnlyList<Target> targets, CancellationToken cancellationToken)
     {
         using SemaphoreSlim gate = new SemaphoreSlim(_options.MaxConcurrentChecks);

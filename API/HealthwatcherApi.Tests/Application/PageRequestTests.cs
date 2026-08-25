@@ -2,10 +2,7 @@ using HealthwatcherApi.Application.Contracts;
 
 namespace HealthwatcherApi.Tests.Application;
 
-/// <summary>
-/// PageRequest is bound straight from the query string, so callers control it.
-/// It has to normalise anything they send.
-/// </summary>
+// PageRequest is bound straight from the query string, so it has to normalise anything callers send.
 public class PageRequestTests
 {
     [Fact]

@@ -77,7 +77,7 @@ public class TargetService : ITargetService
             WindowHours = window,
             TotalChecks = totalCount,
             UpChecks = upCount,
-            // A window with no checks reports 0%, not a divide-by-zero; TotalChecks tells the caller which it is.
+            // An empty window reports 0%, not a divide-by-zero; TotalChecks says which it is.
             UptimePercentage = totalCount == 0 ? 0 : Math.Round(upCount * 100d / totalCount, 2),
         };
     }
@@ -112,7 +112,7 @@ public class TargetService : ITargetService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    // History for an unknown target should 404, not silently return an empty page.
+    // An unknown target should 404, not return an empty page.
     private async Task EnsureTargetExists(Guid targetId, CancellationToken cancellationToken)
     {
         if (!await _targetRepository.ExistsByIdAsync(targetId, cancellationToken))

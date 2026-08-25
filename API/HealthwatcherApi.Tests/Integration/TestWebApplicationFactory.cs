@@ -10,11 +10,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace HealthwatcherApi.Tests.Integration;
 
-/// <summary>
-/// Boots the real application — real middleware, real routing, real DI graph — and
-/// swaps only the database for an in-memory SQLite one. If Program.cs or the service
-/// registrations break, these tests fail rather than production.
-/// </summary>
+// Boots the real application - real middleware, routing and DI graph - and swaps only the
+// database for an in-memory SQLite one.
 public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection _connection = new SqliteConnection("DataSource=:memory:");
@@ -25,9 +22,8 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            // All four matter: leaving any behind means the real (appsettings-configured)
-            // provider registration is still present alongside this one, and EF refuses
-            // to run with two providers registered for the same context.
+            // All four: EF refuses to run with two providers registered for one context, and
+            // leaving any behind keeps the appsettings-configured one alive.
             services.RemoveAll<AppDbContext>();
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<DbContextOptions>();
@@ -39,13 +35,12 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                 .UseSqlite(_connection)
                 .UseSnakeCaseNamingConvention());
 
-            // appsettings.json's Monitoring:Targets points at real internet hosts - fine for
-            // the running app, not something a test run should seed or actually probe.
+            // appsettings.json points Monitoring:Targets at real hosts; a test run must not probe them.
             services.PostConfigure<MonitoringOptions>(options => options.Targets = []);
         });
     }
 
-    /// <summary>Runs an action against a scoped DbContext — use it to seed or assert.</summary>
+    /// <summary>Runs an action against a scoped DbContext, to seed or assert.</summary>
     public async Task<T> WithDbContext<T>(Func<AppDbContext, Task<T>> action)
     {
         using IServiceScope scope = Services.CreateScope();

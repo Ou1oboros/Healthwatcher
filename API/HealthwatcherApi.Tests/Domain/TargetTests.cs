@@ -4,10 +4,7 @@ using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Tests.Domain;
 
-/// <summary>
-/// Entity behaviour: no mocks, no database, no DI. If a rule can be tested here,
-/// test it here — these are the fastest tests you will write.
-/// </summary>
+// Entity behaviour: no mocks, no database, no DI.
 public class TargetTests
 {
     [Fact]

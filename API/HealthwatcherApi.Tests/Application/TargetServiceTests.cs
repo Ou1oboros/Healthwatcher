@@ -11,11 +11,8 @@ using NSubstitute;
 
 namespace HealthwatcherApi.Tests.Application;
 
-/// <summary>
-/// Application services orchestrate: load, delegate to the domain, save, map out.
-/// Repositories, the domain service, and the unit of work are all substituted, so
-/// nothing here touches a database or duplicates a domain rule.
-/// </summary>
+// Application services orchestrate: load, delegate to the domain, save, map out. Everything
+// they depend on is substituted, so nothing here touches a database or retests a domain rule.
 public class TargetServiceTests
 {
     private readonly ITargetRepository _targetRepository = Substitute.For<ITargetRepository>();

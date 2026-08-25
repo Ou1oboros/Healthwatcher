@@ -3,12 +3,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HealthwatcherApi.Infrastructure.Persistence.Converters;
 
-/// <summary>
-/// SQLite has no date type, and EF can't translate a comparison against a DateTimeOffset
-/// stored in the default format. Storing UTC in this fixed ISO-8601 shape makes string
-/// ordering equal time ordering, so "WHERE checked_at >= ?" and "ORDER BY checked_at"
-/// both work directly in the database - every history/uptime query relies on this.
-/// </summary>
+// SQLite has no date type. Storing UTC in this fixed ISO-8601 shape makes string ordering
+// match time ordering, so the history and uptime queries can filter and sort in the database.
 public class UtcDateTimeOffsetConverter : ValueConverter<DateTimeOffset, string>
 {
     private const string SortableUtcFormat = "yyyy-MM-ddTHH:mm:ss.fffffffZ";

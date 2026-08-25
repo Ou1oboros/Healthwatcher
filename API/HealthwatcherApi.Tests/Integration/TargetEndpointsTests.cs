@@ -6,11 +6,8 @@ using HealthwatcherApi.Shared.Common;
 
 namespace HealthwatcherApi.Tests.Integration;
 
-/// <summary>
-/// HTTP in, JSON out, through the real pipeline. Each test gets its own factory (and so
-/// its own in-memory database) rather than sharing one via IClassFixture - several of
-/// these tests write data, and a shared database would make results depend on run order.
-/// </summary>
+// HTTP in, JSON out, through the real pipeline. A factory per test rather than an
+// IClassFixture, so writes in one test can't make another depend on run order.
 public class TargetEndpointsTests : IDisposable
 {
     private readonly TestWebApplicationFactory _factory = new TestWebApplicationFactory();

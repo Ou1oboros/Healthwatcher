@@ -2,8 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HealthwatcherApi.Domain.Entities;
 
-// Audit stamping and the global "not deleted" query filter both live in AppDbContext -
-// deriving from this is all an entity needs to do to get them.
+// Deriving from this is all an entity needs for the audit stamps and soft-delete filter
+// that AppDbContext applies.
 public abstract class BaseEntity
 {
     [Key]

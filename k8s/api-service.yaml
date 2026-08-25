@@ -1,6 +1,4 @@
-# ClusterIP only: nothing outside the cluster needs to reach the API directly. The
-# browser talks to it through nginx's /api/ reverse proxy inside the ui pod (see
-# HealthwatcherUi/nginx.conf), the same way it does with docker-compose.
+# ClusterIP only: the browser reaches the API through nginx's /api/ proxy in the ui pod.
 apiVersion: v1
 kind: Service
 metadata:

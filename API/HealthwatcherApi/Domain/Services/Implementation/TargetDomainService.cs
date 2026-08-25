@@ -8,11 +8,8 @@ namespace HealthwatcherApi.Domain.Services.Implementation;
 
 public class TargetDomainService(ITargetRepository targetRepository) : ITargetDomainService
 {
-    /// <summary>
-    /// Second-level labels that act as part of the suffix rather than as the name,
-    /// so "nic.gov.sa" is named after "nic" and not after "gov". A full public suffix
-    /// list would be exact, but these cover the registrars this dashboard sees.
-    /// </summary>
+    // Labels that belong to the suffix rather than the name, so "nic.gov.sa" is named
+    // after "nic". Not a full public suffix list, but it covers what this dashboard sees.
     private static readonly HashSet<string> SuffixSecondLevelLabels =
         new(StringComparer.OrdinalIgnoreCase) { "ac", "co", "com", "edu", "gov", "mil", "net", "org", "sch" };
 
@@ -56,11 +53,8 @@ public class TargetDomainService(ITargetRepository targetRepository) : ITargetDo
         return uri;
     }
 
-    /// <summary>
-    /// Names a target after the registrable part of its host: "www.google.com" and
-    /// "api.google.com" are both "google". Hosts with nothing to strip - an address
-    /// or a single label such as "localhost" - keep the host as their name.
-    /// </summary>
+    // Names a target after the registrable part of its host: "www.google.com" and
+    // "api.google.com" are both "google". An address or "localhost" keeps the host.
     private static string ExtractName(Uri uri)
     {
         if (uri.HostNameType is UriHostNameType.IPv4 or UriHostNameType.IPv6)
