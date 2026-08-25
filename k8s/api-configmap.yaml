@@ -1,6 +1,5 @@
-# Mounted into the api pod as appsettings.Production.json (see api-deployment.yaml),
-# which ASP.NET Core layers on top of the baked-in appsettings.json. Editing this and
-# re-applying + restarting the deployment changes the monitored URLs with no rebuild.
+# Mounted as appsettings.Production.json, layered over the baked-in appsettings.json, so
+# the monitored URLs change with a re-apply and restart rather than a rebuild.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,10 +8,14 @@ metadata:
 data:
   appsettings.Production.json: |
     {
+      "ConnectionStrings": {
+        "DefaultConnection": "Data Source=/data/healthwatcher.db"
+      },
       "Monitoring": {
         "IntervalSeconds": 30,
         "TimeoutSeconds": 10,
         "MaxConcurrentChecks": 10,
+        "LeaseTtlSeconds": 90,
         "Targets": [
           "https://www.google.com",
           "https://github.com",

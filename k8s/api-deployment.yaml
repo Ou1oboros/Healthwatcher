@@ -1,8 +1,6 @@
-# SQLite lives on the container's writable layer (no PVC) - simplest thing that works
-# for a take-home, but it means history is lost on restart/reschedule. Kept at a single
-# replica: several pods each running EF migrations against the same file on startup,
-# or writing to it concurrently, is not something SQLite is built for. See the README
-# for what a production version would do instead (networked DB + real replicas).
+# Scales horizontally: every replica serves the API, but only the one holding the monitor
+# lease runs the check timer, so a target is probed once per interval however many pods
+# there are. They share the SQLite file on the PVC - see api-pvc.yaml and the README.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -11,7 +9,7 @@ metadata:
   labels:
     app: api
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: api
@@ -20,6 +18,19 @@ spec:
       labels:
         app: api
     spec:
+      # The image runs as non-root (UID 1654) but a fresh volume arrives owned by root, and
+      # the app then cannot create the database file. fsGroup is ignored by minikube's
+      # hostPath-backed PV, so chown it here instead. Same image, run as root.
+      initContainers:
+        - name: chown-data
+          image: healthwatcherapi:local
+          imagePullPolicy: IfNotPresent
+          command: ["chown", "-R", "1654:1654", "/data"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /data
       containers:
         - name: api
           image: healthwatcherapi:local
@@ -30,6 +41,9 @@ spec:
             - name: ASPNETCORE_ENVIRONMENT
               value: Production
           volumeMounts:
+            # The database file, so history survives a restart and every replica shares it.
+            - name: data
+              mountPath: /data
             - name: config
               mountPath: /app/appsettings.Production.json
               subPath: appsettings.Production.json
@@ -47,6 +61,9 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
       volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: api-data
         - name: config
           configMap:
             name: api-config

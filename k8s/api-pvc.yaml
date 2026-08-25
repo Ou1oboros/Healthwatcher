@@ -1,0 +1,14 @@
+# All api replicas share one SQLite file, so it has to outlive any individual pod.
+# ReadWriteOnce restricts the volume to one *node*, not one pod, and minikube is one node.
+# A multi-node cluster would need a networked database instead (see the README).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: api-data
+  namespace: healthwatcher
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
